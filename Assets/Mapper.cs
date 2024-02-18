@@ -8,9 +8,13 @@ using UnityEngine.InputSystem;
 public class Mapper : MonoBehaviour
 {
     public XRRayInteractor interact;
-    public GameObject _gameObject;
-    private GameObject prevGameObject;
+    public GameObject wallPrefab;
+    public GameObject start;
+    public GameObject end;
+
+    private GameObject wall;
     private bool _setMarker;
+    private bool _creating = false;
     public void OnSetMarker()
     {
         _setMarker = true;
@@ -19,14 +23,26 @@ public class Mapper : MonoBehaviour
     {
         Vector3 pos;
         interact.TryGetHitInfo(out pos, out _, out _, out _);
-        _gameObject.transform.position = pos;
+        end.transform.position = new Vector3(pos.x, end.transform.localScale.y/2, pos.z);
+        if(!_creating){
+            start.transform.position = new Vector3(pos.x, start.transform.localScale.y/2, pos.z);
+        }
         if (_setMarker)
         {
             _setMarker = false;
-            if (prevGameObject != null)
-                Debug.DrawLine(prevGameObject.transform.position, pos);
-            prevGameObject = _gameObject;
-            _gameObject = Instantiate(prevGameObject);
+            wall = Instantiate(wallPrefab, start.transform.position, Quaternion.identity);
+            _creating = true;
+            start.transform.position = new Vector3(pos.x, start.transform.localScale.y/2, pos.z);
+
+
+        }
+        if(_creating){
+            start.transform.LookAt(end.transform.position);
+            end.transform.LookAt(start.transform.position);
+            float distance = Vector3.Distance(start.transform.position, end.transform.position);
+            wall.transform.position = start.transform.position + start.transform.forward * (distance / 2);
+            wall.transform.rotation = start.transform.rotation;
+            wall.transform.localScale = new Vector3(wall.transform.localScale.x, wall.transform.localScale.y, distance);
         }
     }
 }
