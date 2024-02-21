@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.ARFoundation;
 
 [RequireComponent(typeof(PlayerInput))]
 public class Mapper : MonoBehaviour
@@ -43,6 +44,10 @@ public class Mapper : MonoBehaviour
             wall.transform.position = start.transform.position + start.transform.forward * (distance / 2);
             wall.transform.rotation = start.transform.rotation;
             wall.transform.localScale = new Vector3(wall.transform.localScale.x, wall.transform.localScale.y, distance);
+		
+
+		// Luo spatial ankkurin seinään. 
+	    wall.AddComponent<ARAnchor>();
         }
     }
 }
