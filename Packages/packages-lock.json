@@ -186,7 +186,7 @@
       "source": "builtin",
       "dependencies": {
         "com.unity.xr.oculus": "4.1.2",
-        "com.unity.xr.openxr": "1.9.1"
+        "com.unity.xr.openxr": "1.10.0"
       }
     },
     "com.unity.ide.rider": {
@@ -434,6 +434,16 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.xr.meta-openxr": {
+      "version": "1.0.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.xr.openxr": "1.7.0",
+        "com.unity.xr.arfoundation": "5.1.0-pre.6"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.xr.oculus": {
       "version": "4.1.2",
       "depth": 1,
@@ -444,8 +454,8 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.openxr": {
-      "version": "1.9.1",
-      "depth": 0,
+      "version": "1.10.0",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.xr.management": "4.4.0",
