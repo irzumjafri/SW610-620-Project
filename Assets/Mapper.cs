@@ -45,9 +45,8 @@ public class Mapper : MonoBehaviour
             wall.transform.rotation = start.transform.rotation;
             wall.transform.localScale = new Vector3(wall.transform.localScale.x, wall.transform.localScale.y, distance);
 		
-
-		// Luo spatial ankkurin seinään. 
-	    wall.AddComponent<ARAnchor>();
+            // Luo spatial ankkurin seinään. 
+            wall.AddComponent<ARAnchor>();
         }
     }
 }
