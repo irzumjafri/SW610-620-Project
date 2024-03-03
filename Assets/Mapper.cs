@@ -16,39 +16,66 @@ public class Mapper : MonoBehaviour
     public GameObject end;
     public Button startButton;
     public TextMeshProUGUI startButtonText;
+    public GameObject hand;
+    public GameObject floor;
 
     private GameObject wall;
-    private bool _started;
+    private bool _settingWalling;
     private bool _setMarker;
     private bool _creating = false;
+    private bool _settingFloorLevel = false;
+    private List<GameObject> walls = new List<GameObject>();
+
+    private bool _floor_setted = false;
 
     void Start()
     {
         startButton.onClick.AddListener(OnStartButtonClick);
 
+        startButtonText.text = "Start flooring";
+        
         start.SetActive(false);
         end.SetActive(false);
     }
 
     void OnStartButtonClick()
     {
-        _started = true;
+        if(!_floor_setted){
+            _settingFloorLevel = true;
+            startButtonText.text = "End flooring";
+            _floor_setted = true;
+        } else if(_settingFloorLevel){
 
-        startButtonText.text = "Mapping started";
-        startButton.interactable = false;
+            floor.AddComponent<ARAnchor>();
+            _settingFloorLevel = false;
+            
+            startButtonText.text = "end walling";
+            //startButton.interactable = false;
+            _settingWalling = true;
 
-        start.SetActive(true);
-        end.SetActive(true);
+            start.SetActive(true);
+            end.SetActive(true);
+        } else if(_settingWalling) {
+            _settingWalling = false;
+            start.SetActive(false);
+            end.SetActive(false);
+            startButtonText.text = "ended walling";
+        }
     }
 
     public void OnSetMarker()
     {
-        _setMarker = true;
+        if(_settingFloorLevel){
+            floor.transform.position = hand.transform.position;
+        }
+        if(_settingWalling){
+            _setMarker = true;  
+        }
     }
 
     void Update()
     {
-        if(_started){
+        if(_settingWalling){
             Vector3 pos;
             interact.TryGetHitInfo(out pos, out _, out _, out _);
             end.transform.position = new Vector3(pos.x, end.transform.localScale.y/2, pos.z);
@@ -60,6 +87,7 @@ public class Mapper : MonoBehaviour
                 _setMarker = false;
                 if(wall != null){
                     wall.AddComponent<ARAnchor>();
+                    walls.Add(wall);
                 }
                 
                 wall = Instantiate(wallPrefab, start.transform.position, Quaternion.identity);
@@ -79,19 +107,6 @@ public class Mapper : MonoBehaviour
                 wall.transform.rotation = wallRotation;
                 wall.transform.localScale = new Vector3(wall.transform.localScale.x, wall.transform.localScale.y, distance);
 
-                /*
-                // Check if ARAnchor component already exists
-                ARAnchor arAnchor = wall.GetComponent<ARAnchor>();
-                if (arAnchor == null)
-                {
-                    // Add ARAnchor component to the wall
-                    arAnchor = wall.AddComponent<ARAnchor>();
-                }
-
-                // Ensure ARAnchor is updated with the current wall position
-                arAnchor.transform.position = wallPosition;
-                arAnchor.transform.rotation = wallRotation;
-                */
             }
         }
     }
