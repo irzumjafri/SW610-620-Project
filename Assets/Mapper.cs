@@ -105,8 +105,7 @@ public class Mapper : MonoBehaviour
             {
                 _setMarker = false;
                 if(wall != null){
-                    wall.AddComponent<ARAnchor>();
-                    
+                    //wall.AddComponent<ARAnchor>();
                 }
                 
                 wall = Instantiate(wallPrefab, start.transform.position, Quaternion.identity);
