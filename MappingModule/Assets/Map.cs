@@ -13,6 +13,9 @@ class Map {
     public string Name;
     
     // points should be normalized
-    public List<Vector3> points;
-
+    public List<Vector2> Points;
+    constructor(string name, List<Vector> points){
+        Name = name;
+        Points = points;
+    }
 }
