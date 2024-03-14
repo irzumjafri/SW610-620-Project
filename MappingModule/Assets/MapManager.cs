@@ -10,13 +10,13 @@ using System;
 
 class MapManager : Singleton
 {
-    List<Map> maps;
+    private List<Map> maps;
 
     void Start(){
         LoadMaps();
     }
 
-    void CreateMap(string name, List<Vector2> points){
+    public void CreateMap(string name, List<Vector2> points, string anchor1, string anchor2, bool save_map = true){
         // normalize coordinates 
         List<Vector2> normalizedPoints = new List<Vector2>();
         // assume first is at (0, 0) and second is at (distance between(first,second), 0)
@@ -30,16 +30,37 @@ class MapManager : Singleton
             double target_angle = cur_angle - angle;
             normalizedPoints[i] = new Vector2(Math.Cos(target_angle), Math.Sin(target_angle)) * normalizedPoints[i].magnitude;
         }
-        maps.Add(new Map(name, normalizedPoints));
+        maps.Add(new Map(name, normalizedPoints, anchor1, anchor2));
+        if(save_map){
+            SaveMaps();
+        }
     }
 
-    Map GetMap(string name){
+    // Returns unity coordinates that are calculated from normalized coordinates with known anchor positions
+    public List<Vector2> GetUnityCoordinates(Map map, Vector2 anchor1, Vector2 anchor2){
+        List<Vector2> normalizedPoints = new List<Vector2>();
+        normalizedPoints.Add(anchor1);
+        normalizedPoints.Add(anchor2);
+        double angle = Math.Atan(normalizedPoints[1].y/normalizedPoints[1].x);
+        for(int i = 2; i < points.Count; i++){
+            double cur_angle = Math.Atan(normalizedPoints[i].y/normalizedPoints[i].x);
+            double target_angle = cur_angle - angle;
+            normalizedPoints[i] = anchor1 + new Vector2(Math.Cos(target_angle), Math.Sin(target_angle)) * normalizedPoints[i].magnitude;
+        }
+        return normalizedPoints;
+    }
+
+    public Map GetMap(string name){
         foreach(var map : maps){
             if(map.Name == name){
                 return map;
             }
         }
         return null;
+    }
+
+    public List<Map> GetMaps(){
+        return maps;
     }
     void LoadMaps()
     {

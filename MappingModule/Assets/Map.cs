@@ -14,8 +14,12 @@ class Map {
     
     // points should be normalized
     public List<Vector2> Points;
-    constructor(string name, List<Vector> points){
+    public string anchor1;
+    public string anchor2;
+    constructor(string name, List<Vector> points, string anchor1, string anchor2){
         Name = name;
         Points = points;
+        this.anchor1 = anchor1;
+        this.anchor2 = anchor2;
     }
 }

@@ -6,127 +6,302 @@ using UnityEngine.InputSystem;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
-[RequireComponent(typeof(PlayerInput))]
+
+enum State
+{
+	Initial,
+	LocatingAnchors,
+	Floor, // At this state, user sets floor level
+	Mapping, // At this state, walls can be added
+	Finished
+}
 public class Mapper : MonoBehaviour
 {
-    public XRRayInteractor interact;
-    public GameObject wallPrefab;
-    public GameObject start;
-    public GameObject end;
-    public Button startButton;
-    public Button resetButton;
-    public TextMeshProUGUI startButtonText;
-    public GameObject hand;
-    public GameObject floor;
+	public XRRayInteractor interact; // the rayinteractor used for raycasting in mapping
+	public GameObject wallPrefab;
+	public Button startButton;
+	public Button resetButton;
+	public TextMeshProUGUI startButtonText;
+	public GameObject hand;
+	public GameObject floor;
+	private List<GameObject> walls = new List<GameObject>();
+	private State _state = State.Initial;
+	private bool mapLoaded = false;
+	private Map map;
+	private List<OVRSpatialAnchor> pillars = new List<OVRSpatialAnchor>();
+	private List<OVRSpatialAnchor.UnboundAnchor> tempAnchors = new List<OVRSpatialAnchor.UnboundAnchor>();
 
-    private GameObject wall;
-    private bool _settingWalling = false;
-    private bool _setMarker = false;
-    private bool _creating = false;
-    private bool _settingFloorLevel = false;
-    private List<GameObject> walls = new List<GameObject>();
+	public OVRSpatialAnchor pillarPrefab;
+	public GameObject pillar;
+	private GameObject wallToLookAt;
+	public const string NumUuidsPlayerPref ="numUuids";
+	
+	Action<OVRSpatialAnchor.UnboundAnchor, bool> _onLoadAnchor;
 
-    private bool _floor_setted = false;
+	void Awake(){
+		_onLoadAnchor = OnLocalized;
+		//LoadAnchors();
+	}
 
-    void Start()
-    {
-        startButton.onClick.AddListener(OnStartButtonClick);
-        resetButton.onClick.AddListener(RestartMapping);
+	void OnAllLocated(){
+		if(tempAnchors.Count != 2) {
+			return;
+		}
+		mapLoaded = true;
+		
 
-        startButtonText.text = "Start flooring";
-        
-        start.SetActive(false);
-        end.SetActive(false);
-    }
+		foreach(var unboundAnchor in tempAnchors){
+			pillars.Add(BindUnbound(unboundAnchor));
+		}
+		if(tempAnchors[0].Guid.ToString() != map.anchor1){
+			pillars.Reverse();
+		}
+		// we can delete temp anchors now
+		tempAnchors.Clear();
 
-    void OnStartButtonClick()
-    {
-        if(!_floor_setted){
-            _settingFloorLevel = true;
-            startButtonText.text = "End flooring";
-            _floor_setted = true;
-        } else if(_settingFloorLevel){
+		// now we need to draw all the other pillars too
+		var points = MapManager.GetInstance().GetUnityCoordinates(map, V3ToV2(pillars[0].transform.position), V3ToV2(pillars[1].transform.position))
 
-            _settingFloorLevel = false;
-            
-            startButtonText.text = "end walling";
-            //startButton.interactable = false;
-            _settingWalling = true;
+		for(int i = 2; i < points.Count; i++){
+			OVRSpatialAnchor pillarCopy = Instantiate(pillarPrefab, new Vector3(points[i].x, floor, points[i].y), Quaternion.identity);
 
-            start.SetActive(true);
-            end.SetActive(true);
-        } else if(_settingWalling) {
-            _settingWalling = false;
-            Destroy(walls[walls.Count - 1]);
-            start.SetActive(false);
-            end.SetActive(false);
-            startButtonText.text = "walling finished";
-        } else {
+			StartCoroutine(AnchorCreated(pillarCopy));
+		}
+		
 
-        }
-    }
+	}
 
-    public void OnSetMarker()
-    {
-        if(_settingFloorLevel){
-            floor.transform.position = hand.transform.position;
-        }
-        if(_settingWalling){
-            _setMarker = true;  
-        }
-    }
+	void V3ToV2(Vector3 vector){
+		return new Vector2(vector.x, vector.z);
+	}
 
-    void RestartMapping(){
-        foreach(GameObject wall in walls){
-            Destroy(wall);
-        }
-        walls.Clear();
+	OVRSpatialAnchor BindUnbound(OVRSpatialAnchor.UnboundAnchor unboundAnchor){
+		var pose = unboundAnchor.Pose;
+		var spatialAnchor = Instantiate(pillarPrefab, pose.position, pose.rotation);
+		unboundAnchor.BindTo(spatialAnchor);
+		return spatialAnchor;
+	}
 
-        _settingWalling = false;
-        _setMarker = false;
-        _creating = false;
-        _settingFloorLevel = false;
-        _floor_setted = false;
+	void TryLoadMap(string name){
+		map = MapManager.GetInstance().GetMap(name);
+		if(map == null){
+			return;
+		}
+		if(mapLoaded){
+			// destroy all previous walls
+			RestartMapping();
+			mapLoaded = false;
+		}
+		ChangeStatus(State.LocatingAnchors);
+		// try to locate the two anchors
+		_anchorsFound = 0;
+		var uuids = new Guid[2];
+		uuids[0] = new Guid(map.anchor1);
+		uuids[1] = new Guid(map.anchor2);
 
-        startButtonText.text = "Start flooring";
-    }
+		OVRSpatialAnchor.LoadOptions options = new OVRSpatialAnchor.LoadOptions{
+			Timeout = 5,
+			StorageLocation = OVRSpace.StorageLocation.Local,
+			Uuids = uuids
+		};
 
-    void Update()
-    {
-        if(_settingWalling){
-            Vector3 pos;
-            interact.TryGetHitInfo(out pos, out _, out _, out _);
-            end.transform.position = new Vector3(pos.x, end.transform.localScale.y/2+floor.transform.position.y, pos.z);
-            if(!_creating){
-                start.transform.position = new Vector3(pos.x, start.transform.localScale.y/2+floor.transform.position.y, pos.z);
-            }
-            if (_setMarker)
-            {
-                _setMarker = false;
-                if(wall != null){
-                    //wall.AddComponent<ARAnchor>();
-                }
-                
-                wall = Instantiate(wallPrefab, start.transform.position, Quaternion.identity);
-                walls.Add(wall);
-                _creating = true;
-                start.transform.position = new Vector3(pos.x, start.transform.localScale.y/2+floor.transform.position.y, pos.z);
-            }
-            if(_creating)
-            {
-                start.transform.LookAt(end.transform.position);
-                end.transform.LookAt(start.transform.position);
-                float distance = Vector3.Distance(start.transform.position, end.transform.position);
-                Vector3 wallPosition = start.transform.position + start.transform.forward * (distance / 2);
-                Quaternion wallRotation = start.transform.rotation;
+		OVRSpatialAnchor.LoadUnboundAnchors(options, anchors => {
+			if(anchors == null || anchors.Count != 2){
+				ChangeStatus(State.Initial);
+				return;
+			}
+			foreach(var anchor in anchors){
+				if(anchor.Localized){
+					_onLoadAnchor(anchor, true);
+				} else if(!anchor.Localizing){
+					anchor.Localize(_onLoadAnchor);
+				}
+			}
+		});
+	}
 
-                // Apply transformations to the wall
-                wall.transform.position = wallPosition;
-                wall.transform.rotation = wallRotation;
-                wall.transform.localScale = new Vector3(wall.transform.localScale.x, wall.transform.localScale.y, distance);
+	private void OnLocalized(OVRSpatialAnchor.UnboundAnchor unboundAnchor, bool success){
+		if(!success) {
+			ChangeStatus(State.Initial);
+			return;
+		}
+		tempAnchors.Add(unboundAnchor);
+		OnAllLocated();
+	}
+	
 
-            }
-        }
-    }
+	void ChangeStatus(State state)
+	{
+		if (state == State.Initial)
+		{
+			startButtonText.text = "Start flooring";
+		}
+		else if (state == State.Floor)
+		{
+			startButtonText.text = "End flooring";
+			floor.GetComponent<MeshRenderer>().enabled = true;
+		}
+		else if (state == State.Mapping)
+		{
+			startButtonText.text = "end walling";
+			pillar.SetActive(true);
+		}
+		else if (state == State.Finished)
+		{
+			startButtonText.text = "walling finished";
+		} else if (state == State.LocatingAnchors){
+			startButtonText.text = "Locating anchors";
+		}
+		if(state != State.Mapping){
+			Destroy(wallToLookAt);
+			wallToLookAt = null;
+			pillar.SetActive(false);
+		}
+		if(state != State.Floor){
+			floor.GetComponent<MeshRenderer>().enabled = false;
+		}
+		_state = state;
+	}
+	void Start()
+	{
+		startButton.onClick.AddListener(OnStartButtonClick);
+		resetButton.onClick.AddListener(RestartMapping);
+
+		ChangeStatus(State.Initial);
+
+	}
+
+	void OnStartButtonClick()
+	{
+		if (_state == State.Initial)
+		{
+			ChangeStatus(State.Floor);
+		}
+		else if (_state == State.Floor)
+		{
+			ChangeStatus(State.Mapping);
+		}
+		else if (_state == State.Mapping)
+		{
+			ChangeStatus(State.Finished);
+		}
+	}
+
+	public void OnSetFloorLevel()
+	{
+		ChangeStatus(State.Mapping);
+	}
+
+	public void OnSetMarker()
+	{
+		if (_state == State.Floor)
+		{
+			OnSetFloorLevel();
+			return;
+		}
+		OVRSpatialAnchor pillarCopy = Instantiate(pillarPrefab, pillar.transform.position, Quaternion.identity);
+		StartCoroutine(AnchorCreated(pillarCopy));
+	}
+
+	private IEnumerator AnchorCreated(OVRSpatialAnchor anchor)
+	{
+		while (!anchor.Created && !anchor.Localized)
+		{
+			yield return new WaitForEndOfFrame();
+		}
+		pillars.Add(anchor);
+
+		anchor.Save((anchor, success) => {
+			// hope for the best
+		});
+
+		if(!PlayerPrefs.HasKey(NumUuidsPlayerPref)){
+			PlayerPrefs.SetInt(NumUuidsPlayerPref, 0);
+		}
+		int numUuids = PlayerPrefs.GetInt(NumUuidsPlayerPref);
+		PlayerPrefs.SetString("uuid" + numUuids, anchor.Uuid.ToString());
+		PlayerPrefs.SetInt(NumUuidsPlayerPref, ++numUuids);
+	}
+
+	void RestartMapping()
+	{
+		foreach (OVRSpatialAnchor anchor in pillars)
+		{
+			Destroy(anchor.gameObject);
+		}
+		foreach(GameObject w in walls){
+			Destroy(w);
+		}
+		pillars.Clear();
+		walls.Clear();
+		ChangeStatus(State.Initial);
+	}
+
+	Vector3 GetPointingLoc()
+	{
+		Vector3 pos;
+		interact.TryGetHitInfo(out pos, out _, out _, out _);
+		return pos;
+	}
+
+	void UpdateWalls()
+	{
+		for (int i = 0; i < pillars.Count - 1; i++)
+		{
+			OVRSpatialAnchor pillar1 = pillars[i];
+			OVRSpatialAnchor pillar2 = pillars[i + 1];
+
+			if (walls.Count <= i)
+			{
+				Vector3 wallPosition = (pillar1.transform.position + pillar2.transform.position) / 2;
+				Quaternion wallRotation = pillar1.transform.rotation;
+
+				// Apply transformations to the wall
+				GameObject wall = Instantiate(wallPrefab, wallPosition, wallRotation);
+				wall.transform.localScale = new Vector3(wall.transform.localScale.x, wall.transform.localScale.y, Vector3.Distance(pillar1.transform.position, pillar2.transform.position));
+				wall.transform.LookAt(pillar1.transform.position);
+
+				walls.Add(wall);
+			}
+		}
+	}
+
+	Vector3 NormalizePosition(Vector3 pos){
+		return new Vector3(pos.x , pillar.transform.localScale.y / 2 + floor.transform.position.y, pos.z);
+	}
+
+	void AddPreviewWall(Vector3 pos){
+		pos = NormalizePosition(pos);
+		if(pillars.Count > 0){
+			OVRSpatialAnchor pillar = pillars[pillars.Count - 1];
+			Vector3 wallPosition = (pillar.transform.position + pos) / 2;
+			Quaternion wallRotation = pillar.transform.rotation;
+			if(wallToLookAt == null){
+				wallToLookAt = Instantiate(wallPrefab, wallPosition, wallRotation);
+			}
+			wallToLookAt.transform.position = NormalizePosition(wallPosition);
+			wallToLookAt.transform.localScale = new Vector3(wallToLookAt.transform.localScale.x, wallToLookAt.transform.localScale.y, Vector3.Distance(pillar.transform.position, pos));
+			wallToLookAt.transform.LookAt(pillar.transform.position);
+		}
+	}
+
+	void Update()
+	{
+		if (_state == State.Mapping)
+		{
+			Vector3 pos = GetPointingLoc();
+			pillar.transform.position = NormalizePosition(pos);
+
+			AddPreviewWall(pos);
+		}
+
+		if (_state == State.Floor)
+		{
+			floor.transform.position = hand.transform.position;
+		}
+		UpdateWalls();
+	}
+
 }
