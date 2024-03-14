@@ -16,7 +16,7 @@ class Map {
     public List<Vector2> Points;
     public string anchor1;
     public string anchor2;
-    constructor(string name, List<Vector> points, string anchor1, string anchor2){
+    public Map(string name, List<Vector2> points, string anchor1, string anchor2){
         Name = name;
         Points = points;
         this.anchor1 = anchor1;

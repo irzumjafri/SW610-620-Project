@@ -1,16 +1,11 @@
-class Singleton : MonoBehaviour {
-    public static Singleton _instance { get; private set;}
+using UnityEngine;
+
+abstract class Singleton<T> : MonoBehaviour where T: Singleton<T> {
+    public static T Instance { get; private set;}
 
     void Awake(){
-        if(_instance == null){
-            _instance = this;
+        if(Instance == null){
+            Instance = (T)this;
         }
-    }
-
-    public static Singleton GetInstance(){
-        if(_instance == null){
-            Debug.Log("Singleton not present");
-        }
-        return _instance;
     }
 }

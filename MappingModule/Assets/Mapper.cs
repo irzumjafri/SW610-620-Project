@@ -7,6 +7,8 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.Threading.Tasks;
+using System.Linq;
 
 
 enum State
@@ -38,10 +40,8 @@ public class Mapper : MonoBehaviour
 	private GameObject wallToLookAt;
 	public const string NumUuidsPlayerPref ="numUuids";
 	
-	Action<OVRSpatialAnchor.UnboundAnchor, bool> _onLoadAnchor;
 
 	void Awake(){
-		_onLoadAnchor = OnLocalized;
 		//LoadAnchors();
 	}
 
@@ -55,25 +55,25 @@ public class Mapper : MonoBehaviour
 		foreach(var unboundAnchor in tempAnchors){
 			pillars.Add(BindUnbound(unboundAnchor));
 		}
-		if(tempAnchors[0].Guid.ToString() != map.anchor1){
+		if(tempAnchors[0].Uuid.ToString() != map.anchor1){
 			pillars.Reverse();
 		}
 		// we can delete temp anchors now
 		tempAnchors.Clear();
 
 		// now we need to draw all the other pillars too
-		var points = MapManager.GetInstance().GetUnityCoordinates(map, V3ToV2(pillars[0].transform.position), V3ToV2(pillars[1].transform.position))
+		var points = MapManager.Instance.GetUnityCoordinates(map, V3ToV2(pillars[0].transform.position), V3ToV2(pillars[1].transform.position));
 
 		for(int i = 2; i < points.Count; i++){
-			OVRSpatialAnchor pillarCopy = Instantiate(pillarPrefab, new Vector3(points[i].x, floor, points[i].y), Quaternion.identity);
+			OVRSpatialAnchor pillarCopy = Instantiate(pillarPrefab, new Vector3(points[i].x, floor.transform.position.y, points[i].y), Quaternion.identity);
 
-			StartCoroutine(AnchorCreated(pillarCopy));
+			AnchorCreated(pillarCopy);
 		}
 		
 
 	}
 
-	void V3ToV2(Vector3 vector){
+	Vector2 V3ToV2(Vector3 vector){
 		return new Vector2(vector.x, vector.z);
 	}
 
@@ -84,8 +84,8 @@ public class Mapper : MonoBehaviour
 		return spatialAnchor;
 	}
 
-	void TryLoadMap(string name){
-		map = MapManager.GetInstance().GetMap(name);
+    async void TryLoadMap(string name){
+		map = MapManager.Instance.GetMap(name);
 		if(map == null){
 			return;
 		}
@@ -96,7 +96,7 @@ public class Mapper : MonoBehaviour
 		}
 		ChangeStatus(State.LocatingAnchors);
 		// try to locate the two anchors
-		_anchorsFound = 0;
+		tempAnchors.Clear();
 		var uuids = new Guid[2];
 		uuids[0] = new Guid(map.anchor1);
 		uuids[1] = new Guid(map.anchor2);
@@ -107,29 +107,36 @@ public class Mapper : MonoBehaviour
 			Uuids = uuids
 		};
 
-		OVRSpatialAnchor.LoadUnboundAnchors(options, anchors => {
-			if(anchors == null || anchors.Count != 2){
-				ChangeStatus(State.Initial);
-				return;
-			}
-			foreach(var anchor in anchors){
-				if(anchor.Localized){
-					_onLoadAnchor(anchor, true);
-				} else if(!anchor.Localizing){
-					anchor.Localize(_onLoadAnchor);
-				}
-			}
-		});
-	}
-
-	private void OnLocalized(OVRSpatialAnchor.UnboundAnchor unboundAnchor, bool success){
-		if(!success) {
+		var anchors = await OVRSpatialAnchor.LoadUnboundAnchorsAsync(options);
+		if(anchors == null || anchors.Length != 2){
 			ChangeStatus(State.Initial);
 			return;
 		}
-		tempAnchors.Add(unboundAnchor);
+		List<OVRTask<bool>> tasks = new();
+		foreach(var anchor in anchors){
+			if(anchor.Localized){
+				tempAnchors.Add(anchor);
+			} else if(!anchor.Localizing){
+				tasks.Add(anchor.LocalizeAsync(5));
+			}
+		}
+		// wait for all anchors to localize
+		// if something fails, reset state to initial
+		foreach(var task in tasks)
+		{
+			bool success = await task;
+			if (!success)
+			{
+				ChangeStatus(State.Initial);
+				tempAnchors.Clear();
+				return;
+			}
+		}
+		// Now both anchors are localized
 		OnAllLocated();
-	}
+
+    }
+
 	
 
 	void ChangeStatus(State state)
@@ -202,27 +209,23 @@ public class Mapper : MonoBehaviour
 			return;
 		}
 		OVRSpatialAnchor pillarCopy = Instantiate(pillarPrefab, pillar.transform.position, Quaternion.identity);
-		StartCoroutine(AnchorCreated(pillarCopy));
+		AnchorCreated(pillarCopy);
 	}
 
-	private IEnumerator AnchorCreated(OVRSpatialAnchor anchor)
+	private async void AnchorCreated(OVRSpatialAnchor anchor)
 	{
 		while (!anchor.Created && !anchor.Localized)
 		{
-			yield return new WaitForEndOfFrame();
+			await Task.Delay((int)Time.deltaTime * 1000);
 		}
 		pillars.Add(anchor);
 
-		anchor.Save((anchor, success) => {
-			// hope for the best
-		});
+		bool success = await anchor.SaveAsync();
 
-		if(!PlayerPrefs.HasKey(NumUuidsPlayerPref)){
-			PlayerPrefs.SetInt(NumUuidsPlayerPref, 0);
+		if (!success)
+		{
+			// should probably do something
 		}
-		int numUuids = PlayerPrefs.GetInt(NumUuidsPlayerPref);
-		PlayerPrefs.SetString("uuid" + numUuids, anchor.Uuid.ToString());
-		PlayerPrefs.SetInt(NumUuidsPlayerPref, ++numUuids);
 	}
 
 	void RestartMapping()
