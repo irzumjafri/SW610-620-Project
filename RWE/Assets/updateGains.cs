@@ -23,7 +23,7 @@ public class updateGains : MonoBehaviour
 
     public Slider bendSlider;
     public TextMeshProUGUI bendValue;
-    // private _redirector;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -31,26 +31,25 @@ public class updateGains : MonoBehaviour
         transValue.text = transSlider.value.ToString();
         curvValue.text = curvSlider.value.ToString();
         bendValue.text = bendSlider.value.ToString();
-        //_rotation = redirector.GetComponent<Rotation>;
     }
     public void rotValueChanged()
     {
-        redirector.GetComponent<rotation>().setMultiplier(rotSlider.value);
+        redirector.GetComponent<RedirectionManager>().setRotationMultiplier(rotSlider.value);
         rotValue.text = rotSlider.value.ToString();
     }
     public void transValueChanged()
     {
-        //redirector.GetComponent<rotation>().setMultiplier(transSlider.value);
+        redirector.GetComponent<RedirectionManager>().setTranslationMultiplier(transSlider.value);
         transValue.text = transSlider.value.ToString();
     }
     public void curvValueChanged()
     {
-        //redirector.GetComponent<rotation>().setMultiplier(curvSlider.value);
+        //redirector.GetComponent<RedirectionManager>().setMultiplier(curvSlider.value);
         curvValue.text = curvSlider.value.ToString();
     }
     public void bendValueChanged()
     {
-        //redirector.GetComponent<rotation>().setMultiplier(bensSlider.value);
+        redirector.GetComponent<RedirectionManager>().setBendingMultiplier(bendSlider.value);
         bendValue.text = bendSlider.value.ToString();
     }
 }
