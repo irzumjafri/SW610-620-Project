@@ -16166,6 +16166,7 @@ GameObject:
   - component: {fileID: 1544301576}
   - component: {fileID: 1544301575}
   - component: {fileID: 1544301577}
+  - component: {fileID: 1544301578}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -16180,7 +16181,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1544301574}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af3e0d761315e954da60a6f12c248e06, type: 3}
   m_Name: 
@@ -16209,9 +16210,23 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1544301574}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4439d5b22ab4034194ff983a4d56d83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameobject: {fileID: 671132266}
+  gazeinteractor: {fileID: 711264511}
+--- !u!114 &1544301578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1544301574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9782b57a23b17b4080ab469382d7691, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   gameobject: {fileID: 671132266}
@@ -18231,7 +18246,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 1.02e-43, y: 1.1e-43, z: 1.5437e-41, w: 1.1828308}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: -2.4387187e+32}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
