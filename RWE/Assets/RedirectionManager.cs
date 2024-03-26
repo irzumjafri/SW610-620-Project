@@ -98,7 +98,7 @@ public class RedirectionManager : MonoBehaviour
         Vector3 currentPosition = mainCamera.transform.position;
         Vector3 positionChange = currentPosition - previousPosition;
 
-        cameraOffset.transform.RotateAround(mainCamera.transform.position,Vector3.up,50*positionChange.magnitude);
+        cameraOffset.transform.RotateAround(mainCamera.transform.position,Vector3.up,bendingGain*positionChange.magnitude);
 
         previousPosition = mainCamera.transform.position;
     }
