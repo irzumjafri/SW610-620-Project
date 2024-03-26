@@ -44,7 +44,7 @@ public class updateGains : MonoBehaviour
     }
     public void curvValueChanged()
     {
-        //redirector.GetComponent<RedirectionManager>().setMultiplier(curvSlider.value);
+        redirector.GetComponent<RedirectionManager>().setCurvatureMultiplier(curvSlider.value);
         curvValue.text = curvSlider.value.ToString();
     }
     public void bendValueChanged()

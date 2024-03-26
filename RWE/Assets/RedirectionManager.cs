@@ -21,7 +21,7 @@ public class RedirectionManager : MonoBehaviour
     private bool rotationActive;
     private bool translationActive;
     private bool bendingActive;
-    //private bool curvingActive;
+    private bool curvingActive;
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +35,8 @@ public class RedirectionManager : MonoBehaviour
         rotationGain = 1;
         translationGain = 1;
         bendingGain = 1;
+        curvatureGain = 1;
+
     }
 
     // Update is called once per frame
@@ -55,10 +57,15 @@ public class RedirectionManager : MonoBehaviour
             injectBending();
         }
 
+        //Curvature  
+        if (curvingActive) {
+            injectCurvature();
+        }
+
         previousXRotation = mainCamera.transform.rotation.eulerAngles.y;
         previousPosition = mainCamera.transform.position;
 
-        //Curvature        
+              
     }
 
     private void injectRotation() 
@@ -76,10 +83,6 @@ public class RedirectionManager : MonoBehaviour
 
         // Apply the rotation to the gameobject
         cameraOffset.transform.RotateAround(mainCamera.transform.position, Vector3.up, rotationGain * change);
-
-        // Set previous rotation
-        previousXRotation = mainCamera.transform.rotation.eulerAngles.y;
-
     }
 
     private void injectTranslation()
@@ -88,19 +91,31 @@ public class RedirectionManager : MonoBehaviour
         Vector3 currentPosition = mainCamera.transform.position;
         Vector3 positionChange = translationGain*(currentPosition - previousPosition);
         cameraOffset.transform.Translate(new Vector3(positionChange.x,0,positionChange.z),Space.World);
-        previousPosition = mainCamera.transform.position;
     }
 
-    private void injectBending()
+    private void injectCurvature()
     {
         float currentXRotation = mainCamera.transform.rotation.eulerAngles.y;
 
         Vector3 currentPosition = mainCamera.transform.position;
         Vector3 positionChange = currentPosition - previousPosition;
 
-        cameraOffset.transform.RotateAround(mainCamera.transform.position,Vector3.up,bendingGain*positionChange.magnitude);
+        cameraOffset.transform.RotateAround(mainCamera.transform.position,Vector3.up,curvatureGain*positionChange.magnitude);
+    }
 
-        previousPosition = mainCamera.transform.position;
+    private void injectBending()
+    {
+        float currentXRotation = mainCamera.transform.rotation.eulerAngles.y;
+        float change = currentXRotation - previousXRotation;
+        if (Mathf.Abs(change) > 180f)
+        {
+            change -= Mathf.Sign(change) * 360f;
+        }
+
+        Vector3 currentPosition = mainCamera.transform.position;
+        Vector3 positionChange = currentPosition - previousPosition;
+
+        cameraOffset.transform.RotateAround(mainCamera.transform.position,Vector3.up,bendingGain*positionChange.magnitude*change);
     }
 
 
@@ -134,7 +149,7 @@ public class RedirectionManager : MonoBehaviour
         } 
     }
 
-    /*public void curvatureToggled()
+    public void curvatureToggled()
     {
         if(curvingActive)
         {
@@ -142,7 +157,7 @@ public class RedirectionManager : MonoBehaviour
         } else {
             curvingActive = true;
         }
-    }*/
+    }
     
     public void setRotationMultiplier(float multiplier)
     {
@@ -159,8 +174,8 @@ public class RedirectionManager : MonoBehaviour
         bendingGain = multiplier;
     }
 
-    /*public void setCurvatureMultiplier(float multiplier)
+    public void setCurvatureMultiplier(float multiplier)
     {
         curvatureGain = multiplier;
-    }*/
+    }
 }
