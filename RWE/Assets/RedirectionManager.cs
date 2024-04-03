@@ -56,17 +56,13 @@ public class RedirectionManager : MonoBehaviour
         previousRealPosition = previousPosition;
 
         setUpSaveToFile();
-        
-        
     }
 
     // Update is called once per frame
     void Update()
     {
         // Real rotation and position
-        previousRealRotation += (mainCamera.transform.rotation.eulerAngles.y - previousXRotation);
-        previousRealRotation = previousRealRotation % 360;
-        previousRealPosition += (mainCamera.transform.position - previousPosition);
+        updateRealPosition();
 
         //Rotation
         if (rotationActive) {
@@ -93,6 +89,12 @@ public class RedirectionManager : MonoBehaviour
 
         // Save the position of cameraOffset to a file
         SavePositionToFile();
+    }
+
+    private void updateRealPosition() {
+        previousRealRotation += (mainCamera.transform.rotation.eulerAngles.y - previousXRotation);
+        previousRealRotation = previousRealRotation % 360;
+        previousRealPosition += (mainCamera.transform.position - previousPosition);
     }
 
     private void setUpSaveToFile(){
