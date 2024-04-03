@@ -23,13 +23,13 @@ public class RedirectionManager : MonoBehaviour
     [Range(-5f, 5f)]
     private float translationGain;
     [SerializeField]
-    [Tooltip("Default multiplier value for Bending gain")]
-    [Range(-5f, 5f)]
-    private float bendingGain;
-    [SerializeField]
     [Tooltip("Default multiplier value for curvature gain")]
     [Range(-5f, 5f)]
     private float curvatureGain;
+    [SerializeField]
+    [Tooltip("Default multiplier value for Bending gain")]
+    [Range(-5f, 5f)]
+    private float bendingGain;
 
     private float previousXRotation;
     private float previousRealRotation;
@@ -38,8 +38,9 @@ public class RedirectionManager : MonoBehaviour
 
     private bool rotationActive;
     private bool translationActive;
-    private bool bendingActive;
     private bool curvingActive;
+    private bool bendingActive;
+    
 
     string usedFilePath;
     // Start is called before the first frame update
