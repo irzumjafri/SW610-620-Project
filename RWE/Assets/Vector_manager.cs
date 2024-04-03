@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Vector_manager : MonoBehaviour
 {
- 
+
     public static Vector3[] Curvature_points = new Vector3[]
     {
         new Vector3(10, 0, 0),
@@ -35,7 +35,6 @@ public class Vector_manager : MonoBehaviour
         new Vector3(0f, 0f, -8f),
         new Vector3(5.66f, 0f, -5.66f)
     };
-
 }
 
 

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18033695, g: 0.2257797, b: 0.30695367, a: 1}
+  m_IndirectSpecularColor: {r: 0.18033718, g: 0.22578008, b: 0.30695432, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -982,7 +982,6 @@ GameObject:
   - component: {fileID: 152653950}
   - component: {fileID: 152653953}
   - component: {fileID: 152653952}
-  - component: {fileID: 152653951}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -1005,26 +1004,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 420303478}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &152653951
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 152653949}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5d69120bba671a42b49e9060aa99a38, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  polePrefab: {fileID: 704981749}
-  player: {fileID: 892446257}
-  arrow: {fileID: 1523134957}
-  detectionRadius: 2
-  minX: -15
-  maxX: 15
-  minZ: -15
-  maxZ: 15
 --- !u!114 &152653952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1044,17 +1023,23 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 152653949}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cffc871fe7ae14c499ac3497bf83d852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   polePrefab: {fileID: 704981749}
   player: {fileID: 892446257}
-  detectionRadius: 1.5
+  arrow: {fileID: 1523134957}
+  detectionRadius: 2.6
+  Random_distance_minX: -15
+  Random_distance_maxX: 15
+  Random_distance_minZ: -15
+  Random_distance_maxZ: 15
   Curvature_test: 0
   Rotation_test: 0
-  Bending_test: 1
+  Bending_test: 0
+  Random_test: 1
 --- !u!4 &153484771 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1686021177305034388, guid: ebee340de387f334f9ac44e044abd8fb, type: 3}
@@ -6510,7 +6495,7 @@ MonoBehaviour:
   mainCamera: {fileID: 892446257}
   rotationGain: 1.42
   translationGain: 0.62
-  bendingGain: 1.92
+  bendingGain: 0.001
   curvatureGain: 1.82
 --- !u!1 &1406256821
 GameObject:

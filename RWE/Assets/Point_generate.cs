@@ -34,7 +34,7 @@ public class RandomPole_generator : MonoBehaviour
         if (currentPole != null && arrow != null)
         {
             // Calculate the position of the arrow just in front of the player
-            Vector3 arrowPosition = player.transform.position + player.transform.forward * 2.0f; // Adjust 2.0f as needed
+            Vector3 arrowPosition = player.transform.position + player.transform.forward * 1.3f; // Adjust 2.0f as needed
             arrowPosition.y = player.transform.position.y*2; // Keep the  height doubke as the player
             arrow.transform.position = arrowPosition;
 
