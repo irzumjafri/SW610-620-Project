@@ -1,7 +1,10 @@
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
+using System.IO;
 
 
 public class RedirectionManager : MonoBehaviour
@@ -15,33 +18,47 @@ public class RedirectionManager : MonoBehaviour
     private float curvatureGain;
 
     private float previousXRotation;
+    private float previousRealRotation;
     private Vector3 previousPosition;
+    private Vector3 previousRealPosition;
 
 
     private bool rotationActive;
     private bool translationActive;
     private bool bendingActive;
     private bool curvingActive;
+    string filePath = "positions.txt";
+    string usedFilePath;
     // Start is called before the first frame update
     void Start()
     {
         rotationActive = false;
         translationActive = false;
         bendingActive = false;
-        //curvingActive = false;
+        curvingActive = false;
 
         previousXRotation = mainCamera.transform.rotation.eulerAngles.y;
         previousPosition = mainCamera.transform.position;
+        previousRealRotation = previousXRotation;
+        previousRealPosition = previousPosition;
         rotationGain = 1;
         translationGain = 1;
         bendingGain = 1;
         curvatureGain = 1;
 
+        setUpSaveToFile();
+        
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+        // Real rotation and position
+        previousRealRotation += (mainCamera.transform.rotation.eulerAngles.y - previousXRotation);
+        previousRealRotation = previousRealRotation % 360;
+        previousRealPosition += (mainCamera.transform.position - previousPosition);
+
         //Rotation
         if (rotationActive) {
             injectRotation();
@@ -65,7 +82,54 @@ public class RedirectionManager : MonoBehaviour
         previousXRotation = mainCamera.transform.rotation.eulerAngles.y;
         previousPosition = mainCamera.transform.position;
 
-              
+        // Save the position of cameraOffset to a file
+        SavePositionToFile();
+    }
+
+    private void setUpSaveToFile(){
+        int count = 1;
+
+        usedFilePath = filePath;
+
+        // Check if the file exists, if yes, append a number until a unique filename is found
+        while (File.Exists(usedFilePath))
+        {
+            usedFilePath = $"{Path.GetFileNameWithoutExtension(filePath)}_{count}{Path.GetExtension(filePath)}";
+            count++;
+        }
+
+        try
+        {
+            // Create the file
+            using (FileStream fs = File.Create(usedFilePath))
+            {
+                // Write header to the file
+                using (StreamWriter writer = new StreamWriter(fs))
+                {
+                    writer.WriteLine("x-coordinates;real_x-coordinates;y-coordinates;real_y-coordinates;z-coordinates;real_z-koordinates;rotation;real_rotation");
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error setting up save to file: " + e.Message);
+        }
+    }
+    private void SavePositionToFile()
+    {
+        try
+        {
+            // Open a file stream to write the positions
+            using (StreamWriter writer = new StreamWriter(usedFilePath, append: true))
+            {
+                // Write the position to the file
+                writer.WriteLine(previousPosition.x + ";" + previousRealPosition.x + ";" + previousPosition.y + ";" + previousRealPosition.y + ";" + previousPosition.z + ";" + previousRealPosition.z + ";" + previousXRotation + ";" + previousRealRotation);
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error saving position to file: " + e.Message);
+        }
     }
 
     private void injectRotation() 
