@@ -760,7 +760,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.6}
+  m_AnchoredPosition: {x: 0, y: 0.4}
   m_SizeDelta: {x: 0.79999995, y: 0.099999994}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &197632695
@@ -4600,10 +4600,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraOffset: {fileID: 2129789399}
   mainCamera: {fileID: 892446257}
-  rotationGain: 1
-  translationGain: 1
-  bendingGain: 1
-  curvatureGain: 1
+  rotationGain: 1.42
+  translationGain: 0.62
+  bendingGain: 1.92
+  curvatureGain: 1.82
 --- !u!1 &1406256821
 GameObject:
   m_ObjectHideFlags: 0
@@ -4668,8 +4668,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 151422322}
   - {fileID: 1548072448}
+  - {fileID: 151422322}
   - {fileID: 1254140716}
   - {fileID: 1866623787}
   m_Father: {fileID: 1517244822}
@@ -5405,7 +5405,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.40000004}
+  m_AnchoredPosition: {x: 0, y: 0.6}
   m_SizeDelta: {x: 0.79999995, y: 0.099999994}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1599682622

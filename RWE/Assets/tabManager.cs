@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Simple script for changing the active tab in the configuration menu
 public class tabManager : MonoBehaviour
 {
     public GameObject button1;
@@ -12,17 +13,6 @@ public class tabManager : MonoBehaviour
     public GameObject tab2;
     public GameObject tab3;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     public void Activate1()
     {
         tab1.SetActive(true);

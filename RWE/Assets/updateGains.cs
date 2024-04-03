@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit;
 using TMPro;
 
-
+//
 public class updateGains : MonoBehaviour
 {
 
@@ -27,6 +27,13 @@ public class updateGains : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //set sliders to values redirectionManager defaults
+        rotSlider.value = redirector.GetComponent<RedirectionManager>().GetRotationMultiplier();
+        transSlider.value = redirector.GetComponent<RedirectionManager>().GetTranslationMultiplier();
+        curvSlider.value = redirector.GetComponent <RedirectionManager>().GetCurvatureMultiplier();
+        bendSlider.value = redirector.GetComponent<RedirectionManager>().GetBendingMultiplier();
+
+        //set text boxes to the same values;
         rotValue.text = rotSlider.value.ToString();
         transValue.text = transSlider.value.ToString();
         curvValue.text = curvSlider.value.ToString();

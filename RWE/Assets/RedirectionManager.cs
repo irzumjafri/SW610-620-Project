@@ -13,19 +13,22 @@ public class RedirectionManager : MonoBehaviour
     public GameObject cameraOffset;
     [Tooltip("The object used for reading the player position and movements")]
     public GameObject mainCamera;
-
+    [SerializeField]
     [Tooltip("Default multiplier value for rotation gain")]
     [Range(-5f, 5f)]
-    public float rotationGain;
+    private float rotationGain;
+    [SerializeField]
     [Tooltip("Default multiplier value for translation gain")]
     [Range(-5f, 5f)]
-    public float translationGain;
+    private float translationGain;
+    [SerializeField]
     [Tooltip("Default multiplier value for Bending gain")]
     [Range(-5f, 5f)]
-    public float bendingGain;
+    private float bendingGain;
+    [SerializeField]
     [Tooltip("Default multiplier value for curvature gain")]
     [Range(-5f, 5f)]
-    public float curvatureGain;
+    private float curvatureGain;
 
     private float previousXRotation;
     private float previousRealRotation;
@@ -248,4 +251,10 @@ public class RedirectionManager : MonoBehaviour
     {
         curvatureGain = multiplier;
     }
+
+    public float GetRotationMultiplier() { return rotationGain; }
+    public float GetTranslationMultiplier() {  return translationGain; }
+    public float GetBendingMultiplier() {  return bendingGain; }
+    public float GetCurvatureMultiplier() {  return curvatureGain; }
+
 }
