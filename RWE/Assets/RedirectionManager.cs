@@ -9,6 +9,7 @@ using System.IO;
 
 public class RedirectionManager : MonoBehaviour
 {
+
     [Tooltip("The gameobject the redirection should be applied to (Usually the object containing the main camera)")]
     public GameObject cameraOffset;
     [Tooltip("The object used for reading the player position and movements")]
@@ -16,7 +17,7 @@ public class RedirectionManager : MonoBehaviour
     [SerializeField]
     [Tooltip("Default multiplier value for rotation gain")]
     [Range(-5f, 5f)]
-    private float rotationGain;
+    public float rotationGain;
     [SerializeField]
     [Tooltip("Default multiplier value for translation gain")]
     [Range(-5f, 5f)]
@@ -40,7 +41,6 @@ public class RedirectionManager : MonoBehaviour
     private bool bendingActive;
     private bool curvingActive;
 
-    string filePath = "positions.txt";
     string usedFilePath;
     // Start is called before the first frame update
     void Start()
@@ -96,16 +96,8 @@ public class RedirectionManager : MonoBehaviour
     }
 
     private void setUpSaveToFile(){
-        int count = 1;
-
-        usedFilePath = filePath;
-
-        // Check if the file exists, if yes, append a number until a unique filename is found
-        while (File.Exists(usedFilePath))
-        {
-            usedFilePath = $"{Path.GetFileNameWithoutExtension(filePath)}_{count}{Path.GetExtension(filePath)}";
-            count++;
-        }
+        usedFilePath = Path.Join(Application.persistentDataPath, string.Format("positions-{0}.txt", DateTime.Now.ToString()));  
+        Debug.Log(usedFilePath);
 
         try
         {
