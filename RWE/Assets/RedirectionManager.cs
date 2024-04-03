@@ -9,24 +9,34 @@ using System.IO;
 
 public class RedirectionManager : MonoBehaviour
 {
+    [Tooltip("The gameobject the redirection should be applied to (Usually the object containing the main camera)")]
     public GameObject cameraOffset;
+    [Tooltip("The object used for reading the player position and movements")]
     public GameObject mainCamera;
 
-    private float rotationGain;
-    private float translationGain;
-    private float bendingGain;
-    private float curvatureGain;
+    [Tooltip("Default multiplier value for rotation gain")]
+    [Range(-5f, 5f)]
+    public float rotationGain;
+    [Tooltip("Default multiplier value for translation gain")]
+    [Range(-5f, 5f)]
+    public float translationGain;
+    [Tooltip("Default multiplier value for Bending gain")]
+    [Range(-5f, 5f)]
+    public float bendingGain;
+    [Tooltip("Default multiplier value for curvature gain")]
+    [Range(-5f, 5f)]
+    public float curvatureGain;
 
     private float previousXRotation;
     private float previousRealRotation;
     private Vector3 previousPosition;
     private Vector3 previousRealPosition;
 
-
     private bool rotationActive;
     private bool translationActive;
     private bool bendingActive;
     private bool curvingActive;
+
     string filePath = "positions.txt";
     string usedFilePath;
     // Start is called before the first frame update
@@ -41,10 +51,6 @@ public class RedirectionManager : MonoBehaviour
         previousPosition = mainCamera.transform.position;
         previousRealRotation = previousXRotation;
         previousRealPosition = previousPosition;
-        rotationGain = 1;
-        translationGain = 1;
-        bendingGain = 1;
-        curvatureGain = 1;
 
         setUpSaveToFile();
         
