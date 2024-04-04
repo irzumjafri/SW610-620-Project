@@ -7,10 +7,12 @@ public class Point_generator : MonoBehaviour
 {
     public GameObject polePrefab;
     public GameObject player;
-    // public GameObject teleportPlayer;
-    // public GameObject plane; // the path 
+    // public GameObject teleportPlayer; // to teleport the player to the starting position after sewuence is complete
+    public GameObject path;
     public GameObject arrow;
 
+    private GameObject currentPath;
+    private GameObject currentArrow;
     private GameObject currentPole;
     private Vector3[] polePoints;
     private int currentPoleIndex = 0;
@@ -78,21 +80,9 @@ public class Point_generator : MonoBehaviour
             GeneratePoleSequence();
         }
 
-        if (currentPole != null && arrow != null)
+        if (currentPole != null && currentArrow != null)
         {
-            // Calculate the position of the arrow just in front of the player
-            Vector3 arrowPosition = player.transform.position + player.transform.forward * 2f; // Adjust 2.0f as needed
-            arrowPosition.y = player.transform.position.y * 1.2f; // Keep the  height doubke as the player
-            arrow.transform.position = arrowPosition;
-
-            // Set arrow rotation to point towards the pole
-            Vector3 direction = new Vector3(currentPole.transform.position.x - arrow.transform.position.x, 0f, currentPole.transform.position.z - arrow.transform.position.z);
-            if (direction != Vector3.zero)
-            {
-                // rotate arrow to point form the tip and not from midlle
-                Quaternion rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 90, 0);
-                arrow.transform.rotation = rotation;
-            }
+            UpdateArrow();
         }
     }
 
@@ -110,8 +100,21 @@ public class Point_generator : MonoBehaviour
             Destroy(currentPole);
             currentPole = null; 
         }
-       
+
+        if (currentArrow != null)
+        {
+            Destroy(currentArrow);
+            currentArrow = null;
+        }
+
+        if (currentPath != null)
+        {
+            Destroy(currentPath);
+            currentPath= null;
+        }
         initialized = false;
+
+        Destroy(currentPath);
 
         // Teleport the player to the starting point
         /*
@@ -131,38 +134,61 @@ public class Point_generator : MonoBehaviour
         else
         {
             currentPole = Instantiate(polePrefab, polePoints[currentPoleIndex], Quaternion.identity);
-            polePrefab.transform.position = new Vector3(0, -10, 0);
+            currentArrow = Instantiate(arrow, polePoints[currentPoleIndex], Quaternion.identity);
         }
+
+        CreatePath();
 
         currentPoleIndex++;
     }
 
+    void UpdateArrow() {
+        // Calculate the position of the arrow just in front of the player
+        Vector3 arrowPosition = player.transform.position + player.transform.forward * 2f; // Adjust 2.0f as needed
+        arrowPosition.y = player.transform.position.y * 1.2f; // Keep the height double as the player
+        currentArrow.transform.position = arrowPosition;
 
+        // Set arrow rotation to point towards the pole
+        Vector3 direction = new Vector3(currentPole.transform.position.x - currentArrow.transform.position.x, 0f, currentPole.transform.position.z - currentArrow.transform.position.z);
+        if (direction != Vector3.zero)
+        {
+            // Rotate arrow to point from the tip and not from the middle
+            Quaternion rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 90, 0);
+            currentArrow.transform.rotation = rotation;
+        }
+    }
 
-    /*
-    void CreatePath(Vector3 startPoint, Vector3 endPoint)
+    void CreatePath()
     {
+        Vector3 startPoint;
+        if (currentPath == null)
+        {
+            startPoint = new Vector3(0, 0, 0);
+        }
+        else
+        {
+            Destroy(currentPath);
+            startPoint = polePoints[currentPoleIndex - 1];
+        }
+        Vector3 endPoint = polePoints[currentPoleIndex];
+
         // Calculate center position of the path
         Vector3 center = (startPoint + endPoint) * 0.5f;
-        center.y = 5.1f; // Set the desired height above the ground
+        center.y += 0.13f; // lift the path on top of the ground 
 
-        // Calculate direction from start to end
+        // Calculate direction and distance from start to end
         Vector3 direction = (endPoint - startPoint).normalized;
-
-        // Calculate distance between start and end
         float distance = Vector3.Distance(startPoint, endPoint);
 
         // Instantiate plane GameObject for the path
-        GameObject pathObject = Instantiate(plane, center, Quaternion.identity);
-
-        // Rotate plane by 90 degrees around x-axis to lay it flat on the floor
-        pathObject.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
+        Quaternion rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 90, 0);
+        currentPath = Instantiate(path, center, rotation);
 
         // Scale the plane to represent the path
-        pathObject.transform.localScale = new Vector3(distance, 0.01f, 0.8f); // Adjust width to 0.8 meters and thickness as needed
+        currentPath.transform.localScale = new Vector3(distance*0.1f, 1f, 0.1f); // values can be changed depending the scale of path wanted
     }
-    */
 
 }
+
 
 
