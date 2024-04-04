@@ -7,35 +7,39 @@ public class Point_generator : MonoBehaviour
 {
     public GameObject polePrefab;
     public GameObject player;
+    // public GameObject teleportPlayer;
     // public GameObject plane; // the path 
-
     public GameObject arrow;
-
-    public float detectionRadius = 2f;
 
     private GameObject currentPole;
     private Vector3[] polePoints;
     private int currentPoleIndex = 0;
+    public float detectionRadius = 2.6f;
 
-    public float Random_distance_minX = -15f;
-    public float Random_distance_maxX = 15f;
-    public float Random_distance_minZ = -15f;
-    public float Random_distance_maxZ = 15f;
+    // Maximun and minimum distances for random pole positions
+    public float Random_distance_minX = -10f;
+    public float Random_distance_maxX = 10f;
+    public float Random_distance_minZ = -10f;
+    public float Random_distance_maxZ = 10f;
 
-    public bool Curvature_test = false;
-    public bool Rotation_test = false;
-    public bool Bending_test = false;
-    public bool Random_test = false;
+    public bool curvatureTest = false;
+    public bool rotationTest = false;
+    public bool bendingTest = false;
+    public bool randomTest = false;
 
+    private bool initialized = false;
 
-    void Start()
+    public void InitializeTest(bool curvatureTest, bool rotationTest, bool bendingTest, bool randomTest)
     {
-        if (Curvature_test == true) { polePoints = Vector_manager.Curvature_points; }
-        else if (Rotation_test == true) { polePoints = Vector_manager.Rotation_points; }
-        else if (Bending_test == true) { polePoints = Vector_manager.Bending_points; }
-        
-        else if (Random_test == true) 
-        { 
+        // Check which testin sequence is activated
+        // Update poles into polePoints form script Vector_manager
+        if (curvatureTest) { polePoints = Vector_manager.Curvature_points; }
+        else if (rotationTest) { polePoints = Vector_manager.Rotation_points; }
+        else if (bendingTest) { polePoints = Vector_manager.Bending_points; }
+
+        else if (randomTest)
+        {
+            // generate random points in the min-max area
             List<Vector3> Random_points = new List<Vector3>();
             for (int i = 0; i < 10; i++)
             {
@@ -48,20 +52,29 @@ public class Point_generator : MonoBehaviour
             polePoints = Random_points.ToArray(); // Convert list to array
         }
 
+        // start putting poles into the playarea
+        polePrefab.SetActive(true);
+        initialized = true;
         GeneratePoleSequence();
+        
     }
 
     void Update()
     {
+        if (!initialized) // Check if initialized is false
+            return;
 
+        // Check if player is colse to the pole
         if (Vector3.Distance(player.transform.position, currentPole.transform.position) < detectionRadius)
         {
             if (currentPoleIndex > polePoints.Length - 1)
             {
-                currentPole.SetActive(false);
+                // if whole sequence is done remove poles from playarea
+                ResetSequence();
                 return;
             }
 
+            // generate a new pole
             GeneratePoleSequence();
         }
 
@@ -69,33 +82,62 @@ public class Point_generator : MonoBehaviour
         {
             // Calculate the position of the arrow just in front of the player
             Vector3 arrowPosition = player.transform.position + player.transform.forward * 2f; // Adjust 2.0f as needed
-            arrowPosition.y = player.transform.position.y*1.2f; // Keep the  height doubke as the player
+            arrowPosition.y = player.transform.position.y * 1.2f; // Keep the  height doubke as the player
             arrow.transform.position = arrowPosition;
 
             // Set arrow rotation to point towards the pole
             Vector3 direction = new Vector3(currentPole.transform.position.x - arrow.transform.position.x, 0f, currentPole.transform.position.z - arrow.transform.position.z);
             if (direction != Vector3.zero)
             {
-                Quaternion rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 90, 0); 
+                // rotate arrow to point form the tip and not from midlle
+                Quaternion rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 90, 0);
                 arrow.transform.rotation = rotation;
             }
         }
+    }
+
+    public void ResetSequence()
+    {
+        // Deactivate all toggles
+        curvatureTest = false;
+        rotationTest = false;
+        bendingTest = false;
+        randomTest = false;
+
+        currentPoleIndex = 0;
+        
+        if (currentPole != null){
+            Destroy(currentPole);
+            currentPole = null; 
+        }
+       
+        initialized = false;
+
+        // Teleport the player to the starting point
+        /*
+        Vector3 startingPosition = new Vector3(0f, 0f, 0f);
+        player.transform.position = startingPosition;
+        */
     }
 
     void GeneratePoleSequence()
     {
         if (currentPole != null)
         {
+            // put the pole into the next place
             currentPole.transform.position = polePoints[currentPoleIndex];
         }
+        // if the pole is first one set the example pole not active
         else
         {
             currentPole = Instantiate(polePrefab, polePoints[currentPoleIndex], Quaternion.identity);
-            polePrefab.SetActive(false);
+            polePrefab.transform.position = new Vector3(0, -10, 0);
         }
 
         currentPoleIndex++;
     }
+
+
 
     /*
     void CreatePath(Vector3 startPoint, Vector3 endPoint)
@@ -122,3 +164,5 @@ public class Point_generator : MonoBehaviour
     */
 
 }
+
+
