@@ -10,12 +10,15 @@ using System;
 public class Select_TestSequence : MonoBehaviour
 {
     public Point_generator pointGenerator;
+    public RedirectionManager redirectionManager;
+    public Toggle translationGain;
 
     public Toggle curvatureToggle;
     public Toggle rotationToggle;
     public Toggle bendingToggle;
     public Toggle randomToggle;
     public Button resetButton;
+    public Button teleportButton;
 
     public void ResetSequence()
     {
@@ -28,9 +31,11 @@ public class Select_TestSequence : MonoBehaviour
         // Call Point_generator method to reset the sequence
         pointGenerator.ResetSequence();
     }
+
     void Start()
     {
         resetButton.onClick.AddListener(ResetSequence);
+        teleportButton.onClick.AddListener(TeleportPlayer);
         // Add listener functions to handle toggle changes
         curvatureToggle.onValueChanged.AddListener(delegate { OnToggleChanged(curvatureToggle); });
         rotationToggle.onValueChanged.AddListener(delegate { OnToggleChanged(rotationToggle); });
@@ -67,4 +72,20 @@ public class Select_TestSequence : MonoBehaviour
         
     }
 
+    public void TeleportPlayer()
+    {
+        if (translationGain.isOn)
+        {
+            translationGain.isOn = false; // Toggle off
+            pointGenerator.TeleportToStart();
+            redirectionManager.UpdatePreviousPosition();
+            translationGain.isOn = true; // Toggle on
+        }
+        else
+        {
+            pointGenerator.TeleportToStart();
+        }
+    }
+
+    
 }

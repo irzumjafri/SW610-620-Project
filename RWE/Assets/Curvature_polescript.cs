@@ -5,28 +5,43 @@ using UnityEngine;
 
 public class Point_generator : MonoBehaviour
 {
+    [Tooltip("Pole to incdicate current goal")]
     public GameObject polePrefab;
+    [Tooltip("Player object to check direction and rotation")]
     public GameObject player;
-    // public GameObject teleportPlayer; // to teleport the player to the starting position after sewuence is complete
+    public GameObject teleportPlayer; // to teleport the player to the starting position after sewuence is complete
+    [Tooltip("Path to show current path the player walks")]
     public GameObject path;
+    [Tooltip("Points to the curren goal pole")]
     public GameObject arrow;
 
+    public float SizeOfMap = 120;
     private GameObject currentPath;
     private GameObject currentArrow;
     private GameObject currentPole;
     private Vector3[] polePoints;
     private int currentPoleIndex = 0;
+
+    [Tooltip("How close the player needs to be to the pole")]
     public float detectionRadius = 2.6f;
 
     // Maximun and minimum distances for random pole positions
+    [Tooltip("Minimum distance to generate random goalpole from center")]
     public float Random_distance_minX = -10f;
+    [Tooltip("Maximum distance to generate random goalpole from center")]
     public float Random_distance_maxX = 10f;
+    [Tooltip("Minimum distance to generate random goalpole from center")]
     public float Random_distance_minZ = -10f;
+    [Tooltip("Maximum distance to generate random goalpole from center")]
     public float Random_distance_maxZ = 10f;
 
+    [Tooltip("Boolean to indicate is curvature testsequence active")]
     public bool curvatureTest = false;
+    [Tooltip("Boolean to indicate is rotation testsequence active")]
     public bool rotationTest = false;
+    [Tooltip("Boolean to indicate is bending testsequence active")]
     public bool bendingTest = false;
+    [Tooltip("Boolean to indicate is random testsequence active")]
     public bool randomTest = false;
 
     private bool initialized = false;
@@ -53,7 +68,7 @@ public class Point_generator : MonoBehaviour
             }
             polePoints = Random_points.ToArray(); // Convert list to array
         }
-
+        //updatePlayArea();
         // start putting poles into the playarea
         polePrefab.SetActive(true);
         initialized = true;
@@ -116,11 +131,6 @@ public class Point_generator : MonoBehaviour
 
         Destroy(currentPath);
 
-        // Teleport the player to the starting point
-        /*
-        Vector3 startingPosition = new Vector3(0f, 0f, 0f);
-        player.transform.position = startingPosition;
-        */
     }
 
     void GeneratePoleSequence()
@@ -186,6 +196,28 @@ public class Point_generator : MonoBehaviour
 
         // Scale the plane to represent the path
         currentPath.transform.localScale = new Vector3(distance*0.1f, 1f, 0.1f); // values can be changed depending the scale of path wanted
+    }
+
+    private void updatePlayArea() {
+        
+        double originalMapSize = 120.0;
+        // Calculate the scaling factor based on the size of the map
+        double scaleFactor = SizeOfMap / originalMapSize;
+
+        // Iterate through each point in the Rotation_points array and scale its coordinates
+        for (int i = 0; i < polePoints.Length; i++)
+        {
+            Vector3 point = polePoints[i];
+            point.x *= (float)scaleFactor;
+            point.z *= (float)scaleFactor;
+            polePoints[i] = point;
+        }
+    }
+
+    public void TeleportToStart() {
+        Vector3 currentPosition = player.transform.position;
+        Vector3 positionChange = -currentPosition;
+        teleportPlayer.transform.Translate(new Vector3(positionChange.x, 0, positionChange.z), Space.World);
     }
 
 }

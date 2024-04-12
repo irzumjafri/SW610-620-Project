@@ -85,17 +85,22 @@ public class RedirectionManager : MonoBehaviour
             injectCurvature();
         }
 
-        previousXRotation = mainCamera.transform.rotation.eulerAngles.y;
-        previousPosition = mainCamera.transform.position;
+        UpdatePreviousPosition();
 
         // Save the position of cameraOffset to a file
         SavePositionToFile();
     }
 
-    private void updateRealPosition() {
+    public void updateRealPosition() {
         previousRealRotation += (mainCamera.transform.rotation.eulerAngles.y - previousXRotation);
         previousRealRotation = previousRealRotation % 360;
         previousRealPosition += (mainCamera.transform.position - previousPosition);
+    }
+
+    public void UpdatePreviousPosition()
+    {
+        previousXRotation = mainCamera.transform.rotation.eulerAngles.y;
+        previousPosition = mainCamera.transform.position;
     }
 
     private void setUpSaveToFile(){
