@@ -797,6 +797,17 @@
                     "action": "SetMarker",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8aa3f0a0-45c4-409a-ae67-59d97dc57fa3",
+                    "path": "<Keyboard>/#(H)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "SetMarker",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
