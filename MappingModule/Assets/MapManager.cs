@@ -1,20 +1,32 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.InputSystem;
-using UnityEngine.XR.ARFoundation;
-using UnityEngine.UI;
-using TMPro;
-using System;
 using System.IO;
+using Newtonsoft.Json;
 
-class MapManager : Singleton<MapManager>
+public class MapManager : Singleton<MapManager>
 {
-    private List<Map> maps;
+    private List<Map> maps = new List<Map>();
 
     void Start(){
         LoadMaps();
+    }
+
+    private float CalculateAngle(Vector2 vec)
+    {
+        if(vec.x == 0)
+        {
+            if(vec.y > 0)
+            {
+                return Mathf.PI / 2;
+            }
+            return 3 * Mathf.PI / 2;
+        }
+        float angle = Mathf.Atan(vec.y / vec.x);
+        if(vec.x < 0)
+        {
+            angle += Mathf.PI;
+        }
+        return angle;
     }
 
     public void CreateMap(string name, List<Vector2> points, string anchor1, string anchor2, bool save_map = true){
@@ -27,9 +39,9 @@ class MapManager : Singleton<MapManager>
         for(int i = 1; i < points.Count; i++){
             normalizedPoints.Add(points[i] - points[0]);
         }
-        float angle = Mathf.Atan(normalizedPoints[1].y/normalizedPoints[1].x);
+        float angle = CalculateAngle(normalizedPoints[1]);
         for(int i = 1; i < points.Count; i++){
-            float cur_angle = Mathf.Atan(normalizedPoints[i].y/normalizedPoints[i].x);
+            float cur_angle = CalculateAngle(normalizedPoints[i]);
             float target_angle = cur_angle - angle;
             normalizedPoints[i] = new Vector2(Mathf.Cos(target_angle), Mathf.Sin(target_angle)) * normalizedPoints[i].magnitude;
         }
@@ -41,16 +53,18 @@ class MapManager : Singleton<MapManager>
 
     // Returns unity coordinates that are calculated from normalized coordinates with known anchor positions
     public List<Vector2> GetUnityCoordinates(Map map, Vector2 anchor1, Vector2 anchor2){
-        List<Vector2> normalizedPoints = new List<Vector2>
+        List<Vector2> normalizedPoints = new()
         {
             anchor1,
             anchor2
         };
-        float angle = Mathf.Atan(normalizedPoints[1].y/normalizedPoints[1].x);
-        for(int i = 2; i < map.Points.Count; i++){
-            float cur_angle = Mathf.Atan(normalizedPoints[i].y/normalizedPoints[i].x);
-            float target_angle = cur_angle - angle;
-            normalizedPoints[i] = anchor1 + new Vector2(Mathf.Cos(target_angle), Mathf.Sin(target_angle)) * normalizedPoints[i].magnitude;
+        Vector2 diff = anchor2 - anchor1;
+        float angle = CalculateAngle(diff);
+        for(int i = 2; i < map.Points.Count; i++)
+        {
+            float cur_angle = CalculateAngle(map.Points[i]);
+            float target_angle = cur_angle + angle;
+            normalizedPoints.Add(anchor1 + new Vector2(Mathf.Cos(target_angle), Mathf.Sin(target_angle)) * map.Points[i].magnitude);
         }
         return normalizedPoints;
     }
@@ -70,11 +84,13 @@ class MapManager : Singleton<MapManager>
     void LoadMaps()
     {
         string filePath = Path.Combine(Application.persistentDataPath, "maps.json");
+        Debug.Log("Loading maps from: " + filePath);
         if (File.Exists(filePath))
         {
             string json = File.ReadAllText(filePath);
-            maps = JsonUtility.FromJson<List<Map>>(json);
-            Debug.Log(maps);
+            //  maps = JsonUtility.FromJson<List<Map>>(json);
+            maps = JsonConvert.DeserializeObject<List<Map>>(json);
+            Debug.Log(maps.Count);
         }
 
     }
@@ -84,7 +100,8 @@ class MapManager : Singleton<MapManager>
     void SaveMaps()
     {
         string filePath = Path.Combine(Application.persistentDataPath, "maps.json");
-        string json = JsonUtility.ToJson(maps, true);
+        Debug.Log("Saving amount of maps:" + maps.Count);
+        string json = JsonConvert.SerializeObject(maps);
         File.WriteAllText(filePath, json);
         Debug.Log("Maps saved to: " + filePath);
     }

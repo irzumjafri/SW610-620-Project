@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Linq;
 
 
-enum State
+public enum State
 {
 	Initial,
 	LocatingAnchors,
@@ -19,16 +19,16 @@ enum State
 	Mapping, // At this state, walls can be added
 	Finished
 }
-public class Mapper : MonoBehaviour
+public class Mapper : Singleton<Mapper>
 {
 	public XRRayInteractor interact; // the rayinteractor used for raycasting in mapping
 	public GameObject wallPrefab;
-	public Button startButton;
-	public Button resetButton;
-	public TextMeshProUGUI startButtonText;
 	public GameObject hand;
 	public GameObject floor;
 	private List<GameObject> walls = new List<GameObject>();
+	public State state { get {
+			return _state;
+		} }
 	private State _state = State.Initial;
 	private bool mapLoaded = false;
 	private Map map;
@@ -38,39 +38,34 @@ public class Mapper : MonoBehaviour
 	public OVRSpatialAnchor pillarPrefab;
 	public GameObject pillar;
 	private GameObject wallToLookAt;
-	public const string NumUuidsPlayerPref ="numUuids";
 	
 
-	void Awake(){
-		//LoadAnchors();
-	}
-
-	void OnAllLocated(){
+	async Task OnAllLocated(){
 		if(tempAnchors.Count != 2) {
 			return;
 		}
 		mapLoaded = true;
-		
 
-		foreach(var unboundAnchor in tempAnchors){
+
+        if (tempAnchors[0].Uuid.ToString() != map.anchor1)
+        {
+            tempAnchors.Reverse();
+        }
+
+        foreach (var unboundAnchor in tempAnchors){
 			pillars.Add(BindUnbound(unboundAnchor));
-		}
-		if(tempAnchors[0].Uuid.ToString() != map.anchor1){
-			pillars.Reverse();
 		}
 		// we can delete temp anchors now
 		tempAnchors.Clear();
 
-		// now we need to draw all the other pillars too
-		var points = MapManager.Instance.GetUnityCoordinates(map, V3ToV2(pillars[0].transform.position), V3ToV2(pillars[1].transform.position));
+        // now we need to draw all the other pillars too
+        var points = MapManager.Instance.GetUnityCoordinates(map, V3ToV2(pillars[0].transform.position), V3ToV2(pillars[1].transform.position));
 
-		for(int i = 2; i < points.Count; i++){
-			OVRSpatialAnchor pillarCopy = Instantiate(pillarPrefab, new Vector3(points[i].x, floor.transform.position.y, points[i].y), Quaternion.identity);
+        for (int i = 2; i < points.Count; i++){
+			OVRSpatialAnchor pillarCopy = Instantiate(pillarPrefab, NormalizePosition(new Vector3(points[i].x, 0, points[i].y)), Quaternion.identity);
 
-			AnchorCreated(pillarCopy);
+            await AnchorCreated(pillarCopy);
 		}
-		
-
 	}
 
 	Vector2 V3ToV2(Vector3 vector){
@@ -79,44 +74,63 @@ public class Mapper : MonoBehaviour
 
 	OVRSpatialAnchor BindUnbound(OVRSpatialAnchor.UnboundAnchor unboundAnchor){
 		var pose = unboundAnchor.Pose;
-		var spatialAnchor = Instantiate(pillarPrefab, pose.position, pose.rotation);
-		unboundAnchor.BindTo(spatialAnchor);
+		var spatialAnchor = Instantiate(pillarPrefab, NormalizePosition(pose.position), pose.rotation);
+      //  unboundAnchor.BindTo(spatialAnchor);
 		return spatialAnchor;
 	}
 
-    async void TryLoadMap(string name){
+	public async Task TryLoadMap(string name){
+		RestartMapping();
 		map = MapManager.Instance.GetMap(name);
-		if(map == null){
+		if (map == null)
+		{
+			Debug.Log("Map not found");
 			return;
 		}
-		if(mapLoaded){
-			// destroy all previous walls
-			RestartMapping();
+        Debug.Log("Map found");
+         if (mapLoaded)
+        {
+            Debug.Log("Map already loaded");
+            // destroy all previous walls
+            RestartMapping();
 			mapLoaded = false;
-		}
-		ChangeStatus(State.LocatingAnchors);
-		// try to locate the two anchors
-		tempAnchors.Clear();
+        }
+        ChangeStatus(State.LocatingAnchors);
+        // try to locate the two anchors
+        tempAnchors.Clear();
 		var uuids = new Guid[2];
 		uuids[0] = new Guid(map.anchor1);
 		uuids[1] = new Guid(map.anchor2);
 
-		OVRSpatialAnchor.LoadOptions options = new OVRSpatialAnchor.LoadOptions{
+        Debug.Log("Loading anchors2");
+        OVRSpatialAnchor.LoadOptions options = new OVRSpatialAnchor.LoadOptions{
 			Timeout = 5,
 			StorageLocation = OVRSpace.StorageLocation.Local,
 			Uuids = uuids
 		};
 
-		var anchors = await OVRSpatialAnchor.LoadUnboundAnchorsAsync(options);
-		if(anchors == null || anchors.Length != 2){
-			ChangeStatus(State.Initial);
-			return;
+        Debug.Log("Loading anchors");
+		OVRSpatialAnchor.UnboundAnchor[] anchors = null;
+		try
+        {
+            anchors = await OVRSpatialAnchor.LoadUnboundAnchorsAsync(options);
+        } catch (Exception ex)
+		{
+			Debug.Log(ex);
 		}
-		List<OVRTask<bool>> tasks = new();
+        if (anchors == null || anchors.Length != 2)
+        {
+            Debug.Log("Didn't find anchors");
+            ChangeStatus(State.Initial);
+			return;
+        }
+        Debug.Log("Found anchors: " + anchors.Length);
+        List<OVRTask<bool>> tasks = new();
 		foreach(var anchor in anchors){
 			if(anchor.Localized){
 				tempAnchors.Add(anchor);
-			} else if(!anchor.Localizing){
+			} else if(!anchor.Localized && !anchor.Localizing){
+				tempAnchors.Add(anchor);
 				tasks.Add(anchor.LocalizeAsync(5));
 			}
 		}
@@ -133,34 +147,24 @@ public class Mapper : MonoBehaviour
 			}
 		}
 		// Now both anchors are localized
-		OnAllLocated();
+		await OnAllLocated();
 
     }
 
 	
 
-	void ChangeStatus(State state)
+	public void ChangeStatus(State state)
 	{
-		if (state == State.Initial)
+		if (state == State.Floor)
 		{
-			startButtonText.text = "Start flooring";
-		}
-		else if (state == State.Floor)
-		{
-			startButtonText.text = "End flooring";
 			floor.GetComponent<MeshRenderer>().enabled = true;
-		}
+            floor.transform.position = new Vector3(floor.transform.position.x, hand.transform.position.y, floor.transform.position.z);
+        }
 		else if (state == State.Mapping)
 		{
-			startButtonText.text = "end walling";
 			pillar.SetActive(true);
 		}
-		else if (state == State.Finished)
-		{
-			startButtonText.text = "walling finished";
-		} else if (state == State.LocatingAnchors){
-			startButtonText.text = "Locating anchors";
-		}
+		//RectTransform d = new RectTransform();
 		if(state != State.Mapping){
 			Destroy(wallToLookAt);
 			wallToLookAt = null;
@@ -173,62 +177,54 @@ public class Mapper : MonoBehaviour
 	}
 	void Start()
 	{
-		startButton.onClick.AddListener(OnStartButtonClick);
-		resetButton.onClick.AddListener(RestartMapping);
-
 		ChangeStatus(State.Initial);
-
 	}
 
-	void OnStartButtonClick()
+	public async void SaveCurrentMap()
 	{
-		if (_state == State.Initial)
+		Debug.Log("Trying to save map...");
+		if(pillars.Count < 3)
 		{
-			ChangeStatus(State.Floor);
+			return;
 		}
-		else if (_state == State.Floor)
+		List<Vector2> points = new List<Vector2>();
+		foreach(var pillar in pillars)
 		{
-			ChangeStatus(State.Mapping);
+			points.Add(new Vector2(pillar.transform.position.x, pillar.transform.position.z));
 		}
-		else if (_state == State.Mapping)
-		{
-			ChangeStatus(State.Finished);
-		}
-	}
-
-	public void OnSetFloorLevel()
-	{
-		ChangeStatus(State.Mapping);
+        // save first pillar
+        await pillars[0].SaveAsync();
+        await pillars[1].SaveAsync();
+        MapManager.Instance.CreateMap(MapManager.Instance.GetMaps().Count.ToString(), points, pillars[0].Uuid.ToString(), pillars[1].Uuid.ToString());
 	}
 
 	public void OnSetMarker()
-	{
-		if (_state == State.Floor)
-		{
-			OnSetFloorLevel();
-			return;
-		}
-		OVRSpatialAnchor pillarCopy = Instantiate(pillarPrefab, pillar.transform.position, Quaternion.identity);
-		AnchorCreated(pillarCopy);
+    {
+		if (_state != State.Mapping) return;
+        OVRSpatialAnchor pillarCopy = Instantiate(pillarPrefab, pillar.transform.position, Quaternion.identity);
+        _ = AnchorCreated(pillarCopy);
 	}
 
-	private async void AnchorCreated(OVRSpatialAnchor anchor)
+	private async Task<bool> AnchorCreated(OVRSpatialAnchor anchor)
 	{
-		while (!anchor.Created && !anchor.Localized)
+		int i = 0;
+        while (!anchor.Created && !anchor.Localized)
 		{
-			await Task.Delay((int)Time.deltaTime * 1000);
-		}
-		pillars.Add(anchor);
-
-		bool success = await anchor.SaveAsync();
-
-		if (!success)
-		{
-			// should probably do something
-		}
+			await Task.Delay((int)(Time.deltaTime * 1000));
+            if (++i > 5/Time.deltaTime || !anchor)
+            {
+				if (anchor)
+                {
+                    Destroy(anchor.gameObject);
+                }
+				return false;
+            }
+        }
+        pillars.Add(anchor);
+		return true;
 	}
 
-	void RestartMapping()
+	public void RestartMapping()
 	{
 		foreach (OVRSpatialAnchor anchor in pillars)
 		{
@@ -239,7 +235,6 @@ public class Mapper : MonoBehaviour
 		}
 		pillars.Clear();
 		walls.Clear();
-		ChangeStatus(State.Initial);
 	}
 
 	Vector3 GetPointingLoc()
@@ -249,6 +244,15 @@ public class Mapper : MonoBehaviour
 		return pos;
 	}
 
+	// update pillars y-coordinates
+	void UpdatePillars()
+	{
+		for (int i = 0; i < pillars.Count; i++)
+		{
+			pillars[i].transform.position = NormalizePosition(pillars[i].transform.position);
+		}
+
+	}
 	void UpdateWalls()
 	{
 		for (int i = 0; i < pillars.Count - 1; i++)
@@ -256,19 +260,25 @@ public class Mapper : MonoBehaviour
 			OVRSpatialAnchor pillar1 = pillars[i];
 			OVRSpatialAnchor pillar2 = pillars[i + 1];
 
-			if (walls.Count <= i)
+            Vector3 wallPosition = (pillar1.transform.position + pillar2.transform.position) / 2;
+            Quaternion wallRotation = pillar1.transform.rotation;
+			GameObject wall;
+            if (walls.Count <= i)
 			{
-				Vector3 wallPosition = (pillar1.transform.position + pillar2.transform.position) / 2;
-				Quaternion wallRotation = pillar1.transform.rotation;
 
 				// Apply transformations to the wall
-				GameObject wall = Instantiate(wallPrefab, wallPosition, wallRotation);
-				wall.transform.localScale = new Vector3(wall.transform.localScale.x, wall.transform.localScale.y, Vector3.Distance(pillar1.transform.position, pillar2.transform.position));
-				wall.transform.LookAt(pillar1.transform.position);
+				wall = Instantiate(wallPrefab);
 
 				walls.Add(wall);
+			} else
+			{
+				wall = walls[i];
 			}
-		}
+			wall.transform.position = wallPosition;
+			wall.transform.rotation = wallRotation;
+            wall.transform.localScale = new Vector3(wall.transform.localScale.x, wall.transform.localScale.y, Vector3.Distance(pillar1.transform.position, pillar2.transform.position));
+            wall.transform.LookAt(pillar1.transform.position);
+        }
 	}
 
 	Vector3 NormalizePosition(Vector3 pos){
@@ -302,8 +312,9 @@ public class Mapper : MonoBehaviour
 
 		if (_state == State.Floor)
 		{
-			floor.transform.position = hand.transform.position;
-		}
+			floor.transform.position = new Vector3(floor.transform.position.x, Mathf.Min(floor.transform.position.y, hand.transform.position.y), floor.transform.position.z);
+            UpdatePillars();
+        }
 		UpdateWalls();
 	}
 
