@@ -8,6 +8,7 @@ public class Point_generator : MonoBehaviour
     [Tooltip("Pole to incdicate current goal")]
     public GameObject polePrefab;
     [Tooltip("Player object to check direction and rotation")]
+    public GameObject circlePrefab;
     public GameObject player;
     public GameObject teleportPlayer; // to teleport the player to the starting position after sewuence is complete
     [Tooltip("Path to show current path the player walks")]
@@ -17,6 +18,7 @@ public class Point_generator : MonoBehaviour
 
     public float SizeOfMap = 120;
     private GameObject currentPath;
+    private GameObject circlePath;
     private GameObject currentArrow;
     private GameObject currentPole;
     private Vector3[] polePoints;
@@ -50,9 +52,18 @@ public class Point_generator : MonoBehaviour
     {
         // Check which testin sequence is activated
         // Update poles into polePoints form script Vector_manager
-        if (curvatureTest) { polePoints = Vector_manager.Curvature_points; }
-        else if (rotationTest) { polePoints = Vector_manager.Rotation_points; }
-        else if (bendingTest) { polePoints = Vector_manager.Bending_points; }
+        if (curvatureTest) 
+        { 
+            polePoints = Vector_manager.Curvature_points; 
+        }
+        else if (rotationTest) 
+        { 
+            polePoints = Vector_manager.Rotation_points; 
+        }
+        else if (bendingTest)
+        { 
+            polePoints = Vector_manager.Bending_points; 
+        }
 
         else if (randomTest)
         {
@@ -197,6 +208,15 @@ public class Point_generator : MonoBehaviour
         // Scale the plane to represent the path
         currentPath.transform.localScale = new Vector3(distance*0.1f, 1f, 0.1f); // values can be changed depending the scale of path wanted
     }
+    /*
+    void CreateCirclePath()
+    {
+        Vector3 startPoint = new Vector3(0, 0, 0);
+        Vector3 endPoint = polePoints[currentPoleIndex];
+
+        Vector3 radius = (endPoint - startPoint).normalized;
+    }
+    */
 
     private void updatePlayArea() {
         
