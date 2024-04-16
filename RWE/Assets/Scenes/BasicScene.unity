@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18033695, g: 0.2257797, b: 0.30695367, a: 1}
+  m_IndirectSpecularColor: {r: 0.18033743, g: 0.22578035, b: 0.30695525, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1111,8 +1111,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   polePrefab: {fileID: 704981749}
   player: {fileID: 892446257}
+  teleportPlayer: {fileID: 0}
   path: {fileID: 806135175}
   arrow: {fileID: 1523134957}
+  SizeOfMap: 120
   detectionRadius: 2.6
   Random_distance_minX: -15
   Random_distance_maxX: 15
@@ -8550,11 +8552,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pointGenerator: {fileID: 152653953}
+  redirectionManager: {fileID: 0}
+  translationGain: {fileID: 0}
   curvatureToggle: {fileID: 492129047}
   rotationToggle: {fileID: 1401349984}
   bendingToggle: {fileID: 1015342333}
   randomToggle: {fileID: 1000102953}
   resetButton: {fileID: 1035343574}
+  teleportButton: {fileID: 0}
 --- !u!1 &1523134957 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: 5528351815fd4c04abf537f22c7e18f1, type: 3}
