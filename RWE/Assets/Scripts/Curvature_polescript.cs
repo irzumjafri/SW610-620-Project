@@ -8,17 +8,21 @@ public class Point_generator : MonoBehaviour
     [Tooltip("Pole to incdicate current goal")]
     public GameObject polePrefab;
     [Tooltip("Player object to check direction and rotation")]
+    public GameObject circlePrefab;
     public GameObject player;
     public GameObject teleportPlayer; // to teleport the player to the starting position after sewuence is complete
     [Tooltip("Path to show current path the player walks")]
     public GameObject path;
     [Tooltip("Points to the curren goal pole")]
     public GameObject arrow;
+    public GameObject circlePathoverlay;
 
     public float SizeOfMap = 120;
     private GameObject currentPath;
+    private GameObject circlePath;
     private GameObject currentArrow;
     private GameObject currentPole;
+    private GameObject pathOverlay;
     private Vector3[] polePoints;
     private int currentPoleIndex = 0;
 
@@ -36,13 +40,13 @@ public class Point_generator : MonoBehaviour
     public float Random_distance_maxZ = 10f;
 
     [Tooltip("Boolean to indicate is curvature testsequence active")]
-    public bool curvatureTest = false;
+    public bool curTest;
     [Tooltip("Boolean to indicate is rotation testsequence active")]
-    public bool rotationTest = false;
+    public bool rotTest;
     [Tooltip("Boolean to indicate is bending testsequence active")]
-    public bool bendingTest = false;
+    public bool bendTest;
     [Tooltip("Boolean to indicate is random testsequence active")]
-    public bool randomTest = false;
+    public bool randTest;
 
     private bool initialized = false;
 
@@ -50,9 +54,21 @@ public class Point_generator : MonoBehaviour
     {
         // Check which testin sequence is activated
         // Update poles into polePoints form script Vector_manager
-        if (curvatureTest) { polePoints = Vector_manager.Curvature_points; }
-        else if (rotationTest) { polePoints = Vector_manager.Rotation_points; }
-        else if (bendingTest) { polePoints = Vector_manager.Bending_points; }
+        if (curvatureTest) 
+        { 
+            polePoints = Vector_manager.Curvature_points;
+            curTest = curvatureTest;
+        }
+        else if (rotationTest) 
+        { 
+            polePoints = Vector_manager.Rotation_points;
+            rotTest = rotationTest;
+        }
+        else if (bendingTest)
+        { 
+            polePoints = Vector_manager.Bending_points; 
+            bendTest = bendingTest; 
+        }
 
         else if (randomTest)
         {
@@ -67,6 +83,7 @@ public class Point_generator : MonoBehaviour
                 Random_points.Add(point);
             }
             polePoints = Random_points.ToArray(); // Convert list to array
+            randTest = randomTest;    
         }
         //updatePlayArea();
         // start putting poles into the playarea
@@ -104,10 +121,10 @@ public class Point_generator : MonoBehaviour
     public void ResetSequence()
     {
         // Deactivate all toggles
-        curvatureTest = false;
-        rotationTest = false;
-        bendingTest = false;
-        randomTest = false;
+        curTest = false;
+        rotTest = false;
+        bendTest = false;
+        randTest = false;
 
         currentPoleIndex = 0;
         
@@ -127,6 +144,19 @@ public class Point_generator : MonoBehaviour
             Destroy(currentPath);
             currentPath= null;
         }
+
+        if (circlePath != null)
+        {
+            Destroy(circlePath);
+            circlePath = null;
+        }
+
+        if (pathOverlay != null)
+        {
+            Destroy(pathOverlay);
+            pathOverlay = null;
+        }
+
         initialized = false;
 
         Destroy(currentPath);
@@ -147,9 +177,20 @@ public class Point_generator : MonoBehaviour
             currentArrow = Instantiate(arrow, polePoints[currentPoleIndex], Quaternion.identity);
         }
 
-        CreatePath();
+        if (bendTest) { CreateCirclePath(); }
+        else { CreatePath(); }
+        
 
         currentPoleIndex++;
+
+        if (currentPoleIndex == polePoints.Length+1)
+        {
+            // Destroy the circle path and its overlay
+            Destroy(pathOverlay);
+            Destroy(circlePath);
+        }
+
+
     }
 
     void UpdateArrow() {
@@ -196,6 +237,36 @@ public class Point_generator : MonoBehaviour
 
         // Scale the plane to represent the path
         currentPath.transform.localScale = new Vector3(distance*0.1f, 1f, 0.1f); // values can be changed depending the scale of path wanted
+    }
+
+    void CreateCirclePath()
+    {
+        if (currentPoleIndex == 0)
+        {
+
+            CreatePath();
+        }
+        else if (currentPoleIndex == 1)
+        {
+            Destroy(currentPath);
+            Vector3 startPoint = new Vector3(0, 0.13f, 0);
+            Vector3 endPoint = polePoints[currentPoleIndex];
+
+            float radius = Vector3.Distance(startPoint, endPoint);
+
+            // Instantiate the circle path and its overlay
+            circlePath = Instantiate(circlePrefab, startPoint, Quaternion.identity);
+            pathOverlay = Instantiate(circlePathoverlay, startPoint, Quaternion.identity);
+
+            // Set the scale of the circle path and its overlay
+            circlePath.transform.localScale = new Vector3(radius * 2.1f, circlePath.transform.localScale.y, radius * 2.1f);
+            pathOverlay.transform.localScale = new Vector3(radius * 1.9f, circlePathoverlay.transform.localScale.y, radius * 1.9f);
+        }
+
+        else
+        {
+            return; // No action needed for other conditions
+        }
     }
 
     private void updatePlayArea() {
