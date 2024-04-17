@@ -12,7 +12,8 @@ public class RenderMapButtons : MonoBehaviour
     void Update()
     {
         // spawn as children
-        foreach (var map in MapManager.Instance.GetMaps())
+        var maps = MapManager.Instance.GetMaps();
+        foreach (var map in maps)
         {
             // check if it is already there
             if(mButtons.Select(b => b.name).Contains(map.Name)){
@@ -21,6 +22,21 @@ public class RenderMapButtons : MonoBehaviour
             GameObject o = Instantiate(ButtonPrefab, transform);
             o.name = map.Name;
             mButtons.Add(o);
+        }
+        // find maps which should be there
+        
+        List<GameObject> toRemove = new List<GameObject>();
+        foreach(var map in mButtons)
+        {
+            if (!maps.Select(m => m.Name).Contains(map.name))
+            {
+                toRemove.Add(map);
+            }
+        }
+        foreach(var map in toRemove)
+        {
+            mButtons.Remove(map);
+            Destroy(map);
         }
     }
 }

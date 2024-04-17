@@ -7394,7 +7394,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a1c6df04dafb548b1e1c014e2b062e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ButtonPrefab: {fileID: 9112540498038002105, guid: e78831e8e28160a42b84a8aba2525b42, type: 3}
+  ButtonPrefab: {fileID: 5858072988334340966, guid: ff4f589e73c565d4d9ffa247ad3bf8ed, type: 3}
 --- !u!1 &1152199273 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9213841042329470732, guid: 085ce58b196caa446a8545c9dd388793, type: 3}
@@ -11349,7 +11349,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 2.3819737e+29, z: 6.68e-43, w: 1.4970573e-34}
+  m_BoundingSphereOverride: {x: 9.1835e-41, y: 1.1681478e-37, z: 9.78048e-39, w: NaN}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0

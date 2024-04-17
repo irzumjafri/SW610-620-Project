@@ -195,7 +195,14 @@ public class Mapper : Singleton<Mapper>
         // save first pillar
         await pillars[0].SaveAsync();
         await pillars[1].SaveAsync();
-        MapManager.Instance.CreateMap(MapManager.Instance.GetMaps().Count.ToString(), points, pillars[0].Uuid.ToString(), pillars[1].Uuid.ToString());
+
+		int num = 0;
+        var maps = MapManager.Instance.GetMaps();
+        while (maps.Select(m => m.Name).Contains(num.ToString()))
+		{
+			num++;
+		}
+        MapManager.Instance.CreateMap(num.ToString(), points, pillars[0].Uuid.ToString(), pillars[1].Uuid.ToString());
 	}
 
 	public void OnSetMarker()

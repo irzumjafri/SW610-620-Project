@@ -8,6 +8,7 @@ public enum ButtonType
     Reset,
     ChangeState,
     LoadMap,
+    DeleteMap,
     ChangeTab
 }
 
@@ -35,6 +36,11 @@ public class UIManager : Singleton<UIManager>
             // should be string
             string s = (string)o;
             await Mapper.Instance.TryLoadMap(s);
+        }
+        if(type == ButtonType.DeleteMap)
+        {
+            string s = (string)o;
+            MapManager.Instance.DeleteMap(s);
         }
         if(type == ButtonType.ChangeTab)
         {

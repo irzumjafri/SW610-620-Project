@@ -51,6 +51,16 @@ public class MapManager : Singleton<MapManager>
         }
     }
 
+    public void DeleteMap(string name)
+    {
+        Map map = GetMap(name);
+        if (map != null)
+        {
+            maps.Remove(map);
+            SaveMaps();
+        }
+    }
+
     // Returns unity coordinates that are calculated from normalized coordinates with known anchor positions
     public List<Vector2> GetUnityCoordinates(Map map, Vector2 anchor1, Vector2 anchor2){
         List<Vector2> normalizedPoints = new()
