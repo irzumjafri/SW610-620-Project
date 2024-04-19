@@ -17,7 +17,7 @@ public class Point_generator : MonoBehaviour
     public GameObject arrow;
     public GameObject circlePathoverlay;
 
-    public float SizeOfMap = 120;
+    public float SizeOfMap = 50;
     private GameObject currentPath;
     private GameObject circlePath;
     private GameObject currentArrow;
@@ -236,7 +236,7 @@ public class Point_generator : MonoBehaviour
         currentPath = Instantiate(path, center, rotation);
 
         // Scale the plane to represent the path
-        currentPath.transform.localScale = new Vector3(distance*0.1f, 1f, 0.1f); // values can be changed depending the scale of path wanted
+        currentPath.transform.localScale = new Vector3(distance*0.11f, 1f, 0.08f); // values can be changed depending the scale of path wanted
     }
 
     void CreateCirclePath()
@@ -271,7 +271,7 @@ public class Point_generator : MonoBehaviour
 
     private void updatePlayArea() {
         
-        double originalMapSize = 120.0;
+        double originalMapSize = 100.0;
         // Calculate the scaling factor based on the size of the map
         double scaleFactor = SizeOfMap / originalMapSize;
 

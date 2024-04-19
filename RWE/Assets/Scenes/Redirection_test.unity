@@ -1117,7 +1117,7 @@ MonoBehaviour:
   arrow: {fileID: 1523134957}
   circlePathoverlay: {fileID: 1410385404}
   SizeOfMap: 120
-  detectionRadius: 2.6
+  detectionRadius: 2.3
   Random_distance_minX: -15
   Random_distance_maxX: 15
   Random_distance_minZ: -15
@@ -7989,10 +7989,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraOffset: {fileID: 2129789399}
   mainCamera: {fileID: 892446257}
-  rotationGain: 1.42
-  translationGain: 0.62
-  curvatureGain: 1.82
-  bendingGain: 0.001
+  rotationGain: 0.8
+  translationGain: 0.8
+  curvatureGain: 14
+  bendingGain: 10
 --- !u!1 &1401349982
 GameObject:
   m_ObjectHideFlags: 0

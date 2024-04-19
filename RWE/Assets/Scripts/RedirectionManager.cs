@@ -24,11 +24,11 @@ public class RedirectionManager : MonoBehaviour
     private float translationGain;
     [SerializeField]
     [Tooltip("Default multiplier value for curvature gain")]
-    [Range(-5f, 5f)]
+    [Range(-5f, 15f)]
     private float curvatureGain;
     [SerializeField]
     [Tooltip("Default multiplier value for Bending gain")]
-    [Range(-5f, 5f)]
+    [Range(-5f, 20f)]
     private float bendingGain;
 
     private float previousXRotation;
@@ -189,9 +189,9 @@ public class RedirectionManager : MonoBehaviour
         Debug.Log("angle: " + bend.ToString("F10"));
 
         if (bend < 0) {
-            cameraOffset.transform.RotateAround(mainCamera.transform.position,Vector3.up,-bendingGain*positionChange.magnitude);
+            cameraOffset.transform.RotateAround(mainCamera.transform.position,Vector3.up,-bendingGain*positionChange.magnitude*Math.Abs(bend));
         } else if (bend > 0) {
-            cameraOffset.transform.RotateAround(mainCamera.transform.position,Vector3.up,bendingGain*positionChange.magnitude);
+            cameraOffset.transform.RotateAround(mainCamera.transform.position,Vector3.up,bendingGain*positionChange.magnitude*Math.Abs(bend));
         }
     }
 
