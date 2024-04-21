@@ -17,7 +17,7 @@ public class Point_generator : MonoBehaviour
     public GameObject arrow;
     public GameObject circlePathoverlay;
 
-    public float SizeOfMap = 50;
+    public float SizeOfMap = 75f;
     private GameObject currentPath;
     private GameObject circlePath;
     private GameObject currentArrow;
@@ -28,7 +28,7 @@ public class Point_generator : MonoBehaviour
 
     [Tooltip("How close the player needs to be to the pole")]
     public float detectionRadius = 2.6f;
-
+    private float size;
     // Maximun and minimum distances for random pole positions
     [Tooltip("Minimum distance to generate random goalpole from center")]
     public float Random_distance_minX = -10f;
@@ -85,7 +85,11 @@ public class Point_generator : MonoBehaviour
             polePoints = Random_points.ToArray(); // Convert list to array
             randTest = randomTest;    
         }
-        //updatePlayArea();
+
+        for (int i = 0; i < polePoints.Length; i++){
+            polePoints[i] = Vector3.Scale(polePoints[i], new Vector3(0.8f, 0, 0.8f));
+        }
+        
         // start putting poles into the playarea
         polePrefab.SetActive(true);
         initialized = true;
@@ -159,7 +163,9 @@ public class Point_generator : MonoBehaviour
 
         initialized = false;
 
+        Vector_manager.ResetState();        
         Destroy(currentPath);
+        polePoints = new Vector3[0];
 
     }
 
@@ -224,7 +230,7 @@ public class Point_generator : MonoBehaviour
         Vector3 endPoint = polePoints[currentPoleIndex];
 
         // Calculate center position of the path
-        Vector3 center = (startPoint + endPoint) * 0.5f;
+        Vector3 center = (startPoint + endPoint) * 0.47f;
         center.y += 0.13f; // lift the path on top of the ground 
 
         // Calculate direction and distance from start to end
@@ -232,11 +238,11 @@ public class Point_generator : MonoBehaviour
         float distance = Vector3.Distance(startPoint, endPoint);
 
         // Instantiate plane GameObject for the path
-        Quaternion rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 90, 0);
+        Quaternion rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(90, 0, 0);
         currentPath = Instantiate(path, center, rotation);
 
         // Scale the plane to represent the path
-        currentPath.transform.localScale = new Vector3(distance*0.11f, 1f, 0.08f); // values can be changed depending the scale of path wanted
+        currentPath.transform.localScale = new Vector3(distance*0.28f, distance*0.28f, 0.15f); // values can be changed depending the scale of path wanted
     }
 
     void CreateCirclePath()
@@ -269,20 +275,19 @@ public class Point_generator : MonoBehaviour
         }
     }
 
-    private void updatePlayArea() {
-        
-        double originalMapSize = 100.0;
-        // Calculate the scaling factor based on the size of the map
-        double scaleFactor = SizeOfMap / originalMapSize;
+    private float updatePlayArea(){
+        // Use as a reference    
+        float originalMapSize = 100.0f; // Add 'f' to indicate it's a float
+        float scaleFactor;
 
-        // Iterate through each point in the Rotation_points array and scale its coordinates
-        for (int i = 0; i < polePoints.Length; i++)
-        {
-            Vector3 point = polePoints[i];
-            point.x *= (float)scaleFactor;
-            point.z *= (float)scaleFactor;
-            polePoints[i] = point;
+        if (SizeOfMap > 150f){
+            scaleFactor = 1.5f;    
         }
+        else {
+            scaleFactor = SizeOfMap / originalMapSize; // Use float division    
+        }
+        Debug.Log("Scale Factor: " + scaleFactor);
+        return scaleFactor;
     }
 
     public void TeleportToStart() {
