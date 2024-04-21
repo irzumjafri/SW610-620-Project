@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using System.IO;
+using Firebase;
+using Firebase.Database;
 
 
 public class RedirectionManager : MonoBehaviour
@@ -41,7 +43,10 @@ public class RedirectionManager : MonoBehaviour
     private bool translationActive;
     private bool curvingActive;
     private bool bendingActive;
-    
+
+    //For firebase
+    private FirebaseFirestore db;
+
 
     string usedFilePath;
     // Start is called before the first frame update
@@ -52,12 +57,16 @@ public class RedirectionManager : MonoBehaviour
         bendingActive = false;
         curvingActive = false;
 
+        //Initializing Database for Firebase
+        db = FirebaseFirestore.GetInstance();
+
         previousXRotation = mainCamera.transform.rotation.eulerAngles.y;
         previousPosition = mainCamera.transform.position;
         previousRealRotation = previousXRotation;
         previousRealPosition = previousPosition;
 
         setUpSaveToFile();
+        InvokeRepeating("SavePositionToFile", 0.5F, 0.5F)
     }
 
     // Update is called once per frame
@@ -67,33 +76,35 @@ public class RedirectionManager : MonoBehaviour
         updateRealPosition();
 
         //Rotation
-        if (rotationActive) {
+        if (rotationActive)
+        {
             injectRotation();
         }
 
         //Translation
-        if (translationActive) {
+        if (translationActive)
+        {
             injectTranslation();
         }
 
         //Bending
-        if (bendingActive) {
+        if (bendingActive)
+        {
             injectBending();
         }
 
         //Curvature  
-        if (curvingActive) {
+        if (curvingActive)
+        {
             injectCurvature();
         }
 
         UpdatePreviousPosition();
 
-
-        // Save the position of cameraOffset to a file
-        SavePositionToFile();
     }
 
-    public void updateRealPosition() {
+    public void updateRealPosition()
+    {
         previousRealRotation += (mainCamera.transform.rotation.eulerAngles.y - previousXRotation);
         previousRealRotation = previousRealRotation % 360;
         previousRealPosition += (mainCamera.transform.position - previousPosition);
@@ -105,8 +116,9 @@ public class RedirectionManager : MonoBehaviour
         previousPosition = mainCamera.transform.position;
     }
 
-    private void setUpSaveToFile(){
-        usedFilePath = Path.Join(Application.persistentDataPath, string.Format("positions-{0}.txt", DateTime.Now.ToString()));  
+    private void setUpSaveToFile()
+    {
+        usedFilePath = Path.Join(Application.persistentDataPath, string.Format("positions-{0}.txt", DateTime.Now.ToString()));
         Debug.Log(usedFilePath);
 
         try
@@ -128,6 +140,7 @@ public class RedirectionManager : MonoBehaviour
     }
     private void SavePositionToFile()
     {
+        SendFirebaseData(previousPosition.x, previousRealPosition.x, previousPosition.z, previousRealPosition.z, previousXRotation, previousRealRotation);
         try
         {
             // Open a file stream to write the positions
@@ -143,7 +156,7 @@ public class RedirectionManager : MonoBehaviour
         }
     }
 
-    private void injectRotation() 
+    private void injectRotation()
     {
         float currentXRotation = mainCamera.transform.rotation.eulerAngles.y;
 
@@ -163,8 +176,8 @@ public class RedirectionManager : MonoBehaviour
     private void injectTranslation()
     {
         Vector3 currentPosition = mainCamera.transform.position;
-        Vector3 positionChange = translationGain*(currentPosition - previousPosition);
-        cameraOffset.transform.Translate(new Vector3(positionChange.x,0,positionChange.z),Space.World);
+        Vector3 positionChange = translationGain * (currentPosition - previousPosition);
+        cameraOffset.transform.Translate(new Vector3(positionChange.x, 0, positionChange.z), Space.World);
     }
 
     private void injectCurvature()
@@ -172,7 +185,7 @@ public class RedirectionManager : MonoBehaviour
         Vector3 currentPosition = mainCamera.transform.position;
         Vector3 positionChange = currentPosition - previousPosition;
 
-        cameraOffset.transform.RotateAround(mainCamera.transform.position,Vector3.up,curvatureGain*positionChange.magnitude);
+        cameraOffset.transform.RotateAround(mainCamera.transform.position, Vector3.up, curvatureGain * positionChange.magnitude);
     }
 
     private void injectBending()
@@ -185,27 +198,30 @@ public class RedirectionManager : MonoBehaviour
         float bend = Mathf.DeltaAngle(currentXRotation, previousXRotation);
 
 
-        
+
         Debug.Log("angle: " + bend.ToString("F10"));
 
-        if (bend < 0) {
-            cameraOffset.transform.RotateAround(mainCamera.transform.position,Vector3.up,-bendingGain*positionChange.magnitude*Math.Abs(bend));
-        } else if (bend > 0) {
-            cameraOffset.transform.RotateAround(mainCamera.transform.position,Vector3.up,bendingGain*positionChange.magnitude*Math.Abs(bend));
+        if (bend < 0)
+        {
+            cameraOffset.transform.RotateAround(mainCamera.transform.position, Vector3.up, -bendingGain * positionChange.magnitude * Math.Abs(bend));
+        }
+        else if (bend > 0)
+        {
+            cameraOffset.transform.RotateAround(mainCamera.transform.position, Vector3.up, bendingGain * positionChange.magnitude * Math.Abs(bend));
         }
     }
 
     private Vector3 RotateVectorAroundAxis(Vector3 vector, Vector3 axis, float angle)
-        {
-            float angleRad = angle * Mathf.Deg2Rad;
-            float cosAngle = (float)Math.Cos(angleRad);
-            float sinAngle = (float)Math.Sin(angleRad);
+    {
+        float angleRad = angle * Mathf.Deg2Rad;
+        float cosAngle = (float)Math.Cos(angleRad);
+        float sinAngle = (float)Math.Sin(angleRad);
 
-            return cosAngle * vector +
-                (1 - cosAngle) * Vector3.Dot(axis, vector) * axis +
-                sinAngle * Vector3.Cross(axis, vector);
+        return cosAngle * vector +
+            (1 - cosAngle) * Vector3.Dot(axis, vector) * axis +
+            sinAngle * Vector3.Cross(axis, vector);
 
-        }
+    }
 
     private Vector3 RotatePointAroundOrigin(Vector3 point, float angle)
     {
@@ -221,44 +237,52 @@ public class RedirectionManager : MonoBehaviour
 
     public void rotationToggled()
     {
-        if(rotationActive)
+        if (rotationActive)
         {
             rotationActive = false;
-        } else {
+        }
+        else
+        {
             rotationActive = true;
         }
     }
 
     public void translationToggled()
     {
-        if(translationActive)
+        if (translationActive)
         {
             translationActive = false;
-        } else {
+        }
+        else
+        {
             translationActive = true;
         }
     }
 
     public void bendingToggled()
     {
-        if(bendingActive)
-        { 
-            bendingActive = false; 
-        } else { 
+        if (bendingActive)
+        {
+            bendingActive = false;
+        }
+        else
+        {
             bendingActive = true;
-        } 
+        }
     }
 
     public void curvatureToggled()
     {
-        if(curvingActive)
+        if (curvingActive)
         {
             curvingActive = false;
-        } else {
+        }
+        else
+        {
             curvingActive = true;
         }
     }
-    
+
     public void setRotationMultiplier(float multiplier)
     {
         rotationGain = multiplier;
@@ -280,8 +304,31 @@ public class RedirectionManager : MonoBehaviour
     }
 
     public float GetRotationMultiplier() { return rotationGain; }
-    public float GetTranslationMultiplier() {  return translationGain; }
-    public float GetBendingMultiplier() {  return bendingGain; }
-    public float GetCurvatureMultiplier() {  return curvatureGain; }
+    public float GetTranslationMultiplier() { return translationGain; }
+    public float GetBendingMultiplier() { return bendingGain; }
+    public float GetCurvatureMultiplier() { return curvatureGain; }
+
+    public async SendFirebaseData(float x_coordinate, float real_x_coordinates, float z_coordinates, float real_z_coordinates, float rotation, float real_rotation)
+    {
+        var data = new Dictionary<string, float>()
+        {
+            {"x_coordinate:", xCoordinate},
+            {"real_x_coordinate", realXCoordinate},
+            {"z_coordinate:", z_coordinate},
+            {"real_z_coordinate:", real_z_coordinate},
+            {"rotation:", rotation},
+            {"real_rotation:", real_rotation},
+        };
+
+        try
+        {
+            await db.Collection("DATA").AddAsync(data);
+            Debug.Log("Data sent to Firebase!");
+        }
+        catch (FirebaseException e)
+        {
+            Debug.LogError("Error sending data: " + e.Message);
+        }
+    }
 
 }
