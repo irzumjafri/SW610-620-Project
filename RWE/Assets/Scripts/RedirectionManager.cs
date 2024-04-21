@@ -7,6 +7,9 @@ using UnityEngine.XR.Interaction.Toolkit;
 using System.IO;
 using Firebase;
 using Firebase.Database;
+using Firebase.Extensions;
+using Firebase.Firestore;
+using System.Threading.Tasks;
 
 
 public class RedirectionManager : MonoBehaviour
@@ -58,7 +61,9 @@ public class RedirectionManager : MonoBehaviour
         curvingActive = false;
 
         //Initializing Database for Firebase
-        db = FirebaseFirestore.GetInstance();
+        var firebaseApp = FirebaseApp.DefaultInstance;
+        db = FirebaseFirestore.GetInstance(firebaseApp);
+       // db = FirebaseFirestore.DefaultInstance;
 
         previousXRotation = mainCamera.transform.rotation.eulerAngles.y;
         previousPosition = mainCamera.transform.position;
@@ -66,7 +71,7 @@ public class RedirectionManager : MonoBehaviour
         previousRealPosition = previousPosition;
 
         setUpSaveToFile();
-        InvokeRepeating("SavePositionToFile", 0.5F, 0.5F)
+        InvokeRepeating("SavePositionToFile", 0.5F, 0.5F);
     }
 
     // Update is called once per frame
@@ -140,7 +145,6 @@ public class RedirectionManager : MonoBehaviour
     }
     private void SavePositionToFile()
     {
-        SendFirebaseData(previousPosition.x, previousRealPosition.x, previousPosition.z, previousRealPosition.z, previousXRotation, previousRealRotation);
         try
         {
             // Open a file stream to write the positions
@@ -154,6 +158,7 @@ public class RedirectionManager : MonoBehaviour
         {
             Debug.LogError("Error saving position to file: " + e.Message);
         }
+        SendFirebaseData(previousPosition.x, previousRealPosition.x, previousPosition.z, previousRealPosition.z, previousXRotation, previousRealRotation);
     }
 
     private void injectRotation()
@@ -308,21 +313,20 @@ public class RedirectionManager : MonoBehaviour
     public float GetBendingMultiplier() { return bendingGain; }
     public float GetCurvatureMultiplier() { return curvatureGain; }
 
-    public async SendFirebaseData(float x_coordinate, float real_x_coordinates, float z_coordinates, float real_z_coordinates, float rotation, float real_rotation)
+    public async Task SendFirebaseData(float x_coordinate, float real_x_coordinate, float z_coordinate, float real_z_coordinate, float rotation, float real_rotation)
     {
         var data = new Dictionary<string, float>()
         {
-            {"x_coordinate:", xCoordinate},
-            {"real_x_coordinate", realXCoordinate},
+            {"x_coordinate:", x_coordinate},
+            {"real_x_coordinate", real_x_coordinate},
             {"z_coordinate:", z_coordinate},
             {"real_z_coordinate:", real_z_coordinate},
             {"rotation:", rotation},
             {"real_rotation:", real_rotation},
         };
-
         try
         {
-            await db.Collection("DATA").AddAsync(data);
+            await db.Collection("LoggedData").Document("Session1").Collection("Data").AddAsync(data);
             Debug.Log("Data sent to Firebase!");
         }
         catch (FirebaseException e)
