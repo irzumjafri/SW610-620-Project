@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "357552106369",
+    "firebase_url": "https://redirected-walking-experiment-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "redirected-walking-experiment",
+    "storage_bucket": "redirected-walking-experiment.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:357552106369:android:a1a43eea19aefeef911680",
+        "android_client_info": {
+          "package_name": "com.DefaultCompany.RWE"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCq0GefqvYQJkMddJmF2_2eSTx7h-_H-5U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
