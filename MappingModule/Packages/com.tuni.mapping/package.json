@@ -1,0 +1,9 @@
+{
+  "name": "com.tuni.mapping",
+  "version": "0.0.1",
+  "displayName": "Mapping module",
+  "description": "A helper to make docfx based document in Unity3D",
+  "unity": "2022.3",
+  "keywords": [],
+  "dependencies": {}
+}
