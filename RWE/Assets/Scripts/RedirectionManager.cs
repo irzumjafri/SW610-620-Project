@@ -317,8 +317,8 @@ public class RedirectionManager : MonoBehaviour
     {
         var data = new Dictionary<string, float>()
         {
-            {"x_coordinate", xCoordinate},
-            {"real_x_coordinate", realXCoordinate},
+            {"x_coordinate", x_coordinate},
+            {"real_x_coordinate", real_x_coordinate},
             {"z_coordinate", z_coordinate},
             {"real_z_coordinate", real_z_coordinate},
             {"rotation", rotation},
