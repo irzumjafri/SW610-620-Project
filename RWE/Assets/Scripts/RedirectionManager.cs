@@ -312,12 +312,12 @@ public class RedirectionManager : MonoBehaviour
     {
         var data = new Dictionary<string, float>()
         {
-            {"x_coordinate:", xCoordinate},
+            {"x_coordinate", xCoordinate},
             {"real_x_coordinate", realXCoordinate},
-            {"z_coordinate:", z_coordinate},
-            {"real_z_coordinate:", real_z_coordinate},
-            {"rotation:", rotation},
-            {"real_rotation:", real_rotation},
+            {"z_coordinate", z_coordinate},
+            {"real_z_coordinate", real_z_coordinate},
+            {"rotation", rotation},
+            {"real_rotation", real_rotation},
         };
 
         try
