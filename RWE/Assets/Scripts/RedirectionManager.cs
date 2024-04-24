@@ -10,6 +10,7 @@ using Firebase.Database;
 using Firebase.Extensions;
 using Firebase.Firestore;
 using System.Threading.Tasks;
+using UnityEngine.Analytics;
 
 
 public class RedirectionManager : MonoBehaviour
@@ -49,6 +50,7 @@ public class RedirectionManager : MonoBehaviour
 
     //For firebase
     private FirebaseFirestore db;
+    public int firebaseDataCounter = 0;
 
 
     string usedFilePath;
@@ -71,6 +73,7 @@ public class RedirectionManager : MonoBehaviour
         previousRealPosition = previousPosition;
 
         setUpSaveToFile();
+        SendSessionInfoToFirebase();
         InvokeRepeating("SavePositionToFile", 0.5F, 0.5F);
     }
 
@@ -158,6 +161,7 @@ public class RedirectionManager : MonoBehaviour
         {
             Debug.LogError("Error saving position to file: " + e.Message);
         }
+        
         SendFirebaseData(previousPosition.x, previousRealPosition.x, previousPosition.z, previousRealPosition.z, previousXRotation, previousRealRotation);
     }
 
@@ -315,19 +319,42 @@ public class RedirectionManager : MonoBehaviour
 
     public async Task SendFirebaseData(float x_coordinate, float real_x_coordinate, float z_coordinate, float real_z_coordinate, float rotation, float real_rotation)
     {
-        var data = new Dictionary<string, float>()
+        firebaseDataCounter++;
+        var data = new Dictionary<string, object>()
         {
-            {"x_coordinate:", x_coordinate},
+            {"timestamp", DateTime.Now},
+            {"x_coordinate", x_coordinate},
             {"real_x_coordinate", real_x_coordinate},
-            {"z_coordinate:", z_coordinate},
-            {"real_z_coordinate:", real_z_coordinate},
-            {"rotation:", rotation},
-            {"real_rotation:", real_rotation},
+            {"z_coordinate", z_coordinate},
+            {"real_z_coordinate", real_z_coordinate},
+            {"rotation", rotation},
+            {"real_rotation", real_rotation},
         };
+        Debug.Log(x_coordinate);
         try
         {
-            await db.Collection("LoggedData").Document("Session1").Collection("Data").AddAsync(data);
-            Debug.Log("Data sent to Firebase!");
+            String sessionID = AnalyticsSessionInfo.sessionId.ToString();
+            await db.Collection("LoggedData").Document(sessionID).Collection("Data").Document(firebaseDataCounter.ToString()).SetAsync(data);
+            //Debug.Log("Data sent to Firebase!");
+        }
+        catch (FirebaseException e)
+        {
+            Debug.LogError("Error sending data: " + e.Message);
+        }
+    }
+
+    public async Task SendSessionInfoToFirebase()
+    {
+        var sessionData = new Dictionary<string, object>()
+            {
+                { "date", DateTime.Now},
+                { "test_sequence", "demo"}
+            };
+        try
+        {
+            String sessionID = AnalyticsSessionInfo.sessionId.ToString();
+            await db.Collection("LoggedData").Document(sessionID).SetAsync(sessionData);
+            Debug.Log("Session info sent to firebase");
         }
         catch (FirebaseException e)
         {
