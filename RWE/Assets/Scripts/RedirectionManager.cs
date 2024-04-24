@@ -65,7 +65,7 @@ public class RedirectionManager : MonoBehaviour
         //Initializing Database for Firebase
         var firebaseApp = FirebaseApp.DefaultInstance;
         db = FirebaseFirestore.GetInstance(firebaseApp);
-       // db = FirebaseFirestore.DefaultInstance;
+        // db = FirebaseFirestore.DefaultInstance;
 
         previousXRotation = mainCamera.transform.rotation.eulerAngles.y;
         previousPosition = mainCamera.transform.position;
