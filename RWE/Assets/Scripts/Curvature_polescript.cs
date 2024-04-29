@@ -16,10 +16,12 @@ public class Point_generator : MonoBehaviour
     [Tooltip("Points to the curren goal pole")]
     public GameObject arrow;
     public GameObject circlePathoverlay;
+    public GameObject MySpline; 
 
-    public float SizeOfMap = 50;
+    private float SizeOfMap = 100f;
+    private GameObject spline;
     private GameObject currentPath;
-    private GameObject circlePath;
+    private GameObject circlePath; 
     private GameObject currentArrow;
     private GameObject currentPole;
     private GameObject pathOverlay;
@@ -28,7 +30,7 @@ public class Point_generator : MonoBehaviour
 
     [Tooltip("How close the player needs to be to the pole")]
     public float detectionRadius = 2.6f;
-
+    private float size;
     // Maximun and minimum distances for random pole positions
     [Tooltip("Minimum distance to generate random goalpole from center")]
     public float Random_distance_minX = -10f;
@@ -52,8 +54,10 @@ public class Point_generator : MonoBehaviour
 
     public void InitializeTest(bool curvatureTest, bool rotationTest, bool bendingTest, bool randomTest)
     {
+   
         // Check which testin sequence is activated
         // Update poles into polePoints form script Vector_manager
+        size = updatePlayArea();
         if (curvatureTest) 
         { 
             polePoints = Vector_manager.Curvature_points;
@@ -85,12 +89,17 @@ public class Point_generator : MonoBehaviour
             polePoints = Random_points.ToArray(); // Convert list to array
             randTest = randomTest;    
         }
-        //updatePlayArea();
+
+        for (int i = 0; i < polePoints.Length; i++)
+        {
+            polePoints[i] = Vector3.Scale(polePoints[i], new Vector3(size, 0, size));
+        }
+
         // start putting poles into the playarea
         polePrefab.SetActive(true);
         initialized = true;
+
         GeneratePoleSequence();
-        
     }
 
     void Update()
@@ -158,17 +167,21 @@ public class Point_generator : MonoBehaviour
         }
 
         initialized = false;
-
+        MySpline.SetActive(false);
+        Vector_manager.ResetState();
         Destroy(currentPath);
+        polePoints = new Vector3[0];
 
     }
 
     void GeneratePoleSequence()
     {
+
         if (currentPole != null)
         {
             // put the pole into the next place
             currentPole.transform.position = polePoints[currentPoleIndex];
+
         }
         // if the pole is first one set the example pole not active
         else
@@ -177,20 +190,12 @@ public class Point_generator : MonoBehaviour
             currentArrow = Instantiate(arrow, polePoints[currentPoleIndex], Quaternion.identity);
         }
 
-        if (bendTest) { CreateCirclePath(); }
+        if (bendTest) {CreateCirclePath();}
+        else if(curTest){CreateSplinePath();}
         else { CreatePath(); }
         
 
         currentPoleIndex++;
-
-        if (currentPoleIndex == polePoints.Length+1)
-        {
-            // Destroy the circle path and its overlay
-            Destroy(pathOverlay);
-            Destroy(circlePath);
-        }
-
-
     }
 
     void UpdateArrow() {
@@ -238,12 +243,21 @@ public class Point_generator : MonoBehaviour
         // Scale the plane to represent the path
         currentPath.transform.localScale = new Vector3(distance*0.11f, 1f, 0.08f); // values can be changed depending the scale of path wanted
     }
+    
+    void CreateSplinePath(){
+        
+        if (currentPoleIndex == 0)
+        {
+            MySpline.SetActive(true);
+        }
+         
+    }
+
 
     void CreateCirclePath()
     {
         if (currentPoleIndex == 0)
         {
-
             CreatePath();
         }
         else if (currentPoleIndex == 1)
@@ -269,20 +283,23 @@ public class Point_generator : MonoBehaviour
         }
     }
 
-    private void updatePlayArea() {
-        
-        double originalMapSize = 100.0;
-        // Calculate the scaling factor based on the size of the map
-        double scaleFactor = SizeOfMap / originalMapSize;
+    private float updatePlayArea()
+    {
+        // Use as a reference
+        float originalMapSize = 100.0f; // Add 'f' to indicate it's a float
+        float scaleFactor;
 
-        // Iterate through each point in the Rotation_points array and scale its coordinates
-        for (int i = 0; i < polePoints.Length; i++)
+        if (SizeOfMap > 150f)
         {
-            Vector3 point = polePoints[i];
-            point.x *= (float)scaleFactor;
-            point.z *= (float)scaleFactor;
-            polePoints[i] = point;
+            scaleFactor = 1.5f;
         }
+        else
+        {
+            scaleFactor = SizeOfMap / originalMapSize; // Use float division
+        }
+
+        Debug.Log("Scale Factor: " + scaleFactor);
+        return scaleFactor;
     }
 
     public void TeleportToStart() {
