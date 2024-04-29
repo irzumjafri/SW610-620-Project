@@ -1116,7 +1116,6 @@ MonoBehaviour:
   path: {fileID: 1429364958}
   arrow: {fileID: 1523134957}
   circlePathoverlay: {fileID: 1410385404}
-  SizeOfMap: 100
   detectionRadius: 2.3
   Random_distance_minX: -15
   Random_distance_maxX: 15
@@ -2388,7 +2387,7 @@ Transform:
   - {fileID: 152653950}
   - {fileID: 1657559998}
   - {fileID: 1410385405}
-  - {fileID: 1429364961}
+  - {fileID: 435352759}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &427007707 stripped
@@ -2472,6 +2471,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 433509049}
   m_CullTransparentMesh: 1
+--- !u!1 &435352758
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 435352759}
+  m_Layer: 0
+  m_Name: Spath
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &435352759
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435352758}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.117199, y: 20.107601, z: -6.5391073}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 420303478}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &441450734
 GameObject:
   m_ObjectHideFlags: 0
