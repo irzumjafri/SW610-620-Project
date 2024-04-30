@@ -11,6 +11,8 @@ using Firebase.Extensions;
 using Firebase.Firestore;
 using System.Threading.Tasks;
 using UnityEngine.Analytics;
+using SystemVector3 = System.Numerics.Vector3;
+using SystemQuaternion = System.Numerics.Quaternion;
 
 
 public class RedirectionManager : MonoBehaviour
@@ -37,7 +39,7 @@ public class RedirectionManager : MonoBehaviour
     [Range(-5f, 20f)]
     private float bendingGain;
 
-    private float previousXRotation;
+    private float previousYRotation;
     private float previousRealRotation;
     private Vector3 previousPosition;
     private Vector3 previous2Position;
@@ -67,9 +69,9 @@ public class RedirectionManager : MonoBehaviour
         db = FirebaseFirestore.GetInstance(firebaseApp);
         // db = FirebaseFirestore.DefaultInstance;
 
-        previousXRotation = mainCamera.transform.rotation.eulerAngles.y;
+        previousYRotation = mainCamera.transform.rotation.eulerAngles.y;
         previousPosition = mainCamera.transform.position;
-        previousRealRotation = previousXRotation;
+        previousRealRotation = previousYRotation;
         previousRealPosition = previousPosition;
 
         setUpSaveToFile();
@@ -108,19 +110,36 @@ public class RedirectionManager : MonoBehaviour
         }
 
         UpdatePreviousPosition();
-
     }
 
     public void updateRealPosition()
     {
-        previousRealRotation += (mainCamera.transform.rotation.eulerAngles.y - previousXRotation);
+        // calculating real rotated angle
+        float realAngle = mainCamera.transform.rotation.eulerAngles.y - previousYRotation;
+        previousRealRotation += realAngle;
         previousRealRotation = previousRealRotation % 360;
-        previousRealPosition += (mainCamera.transform.position - previousPosition);
+
+        // Rotation compared to previous real rotation
+        float totalRotation = mainCamera.transform.rotation.eulerAngles.y - previousRealRotation;
+
+        // Angle to manupulate current wector into right direction
+        float angleToBeManipulated2 = realAngle - totalRotation;
+
+        // Updated position vector to be manipulated
+        Vector3 currentVector = mainCamera.transform.position - previousPosition;
+
+        // Rotating current vector to match real rotation
+        if (currentVector.magnitude > 0 ) {
+            Quaternion rotation = Quaternion.Euler(0f, angleToBeManipulated2 , 0f);
+            Vector3 changeVector = rotation * currentVector;
+            previousRealPosition += changeVector;
+        }
     }
+
 
     public void UpdatePreviousPosition()
     {
-        previousXRotation = mainCamera.transform.rotation.eulerAngles.y;
+        previousYRotation = mainCamera.transform.rotation.eulerAngles.y;
         previousPosition = mainCamera.transform.position;
     }
 
@@ -154,7 +173,7 @@ public class RedirectionManager : MonoBehaviour
             using (StreamWriter writer = new StreamWriter(usedFilePath, append: true))
             {
                 // Write the position to the file
-                writer.WriteLine(previousPosition.x + ";" + previousRealPosition.x + ";" + previousPosition.y + ";" + previousRealPosition.y + ";" + previousPosition.z + ";" + previousRealPosition.z + ";" + previousXRotation + ";" + previousRealRotation);
+                writer.WriteLine(previousPosition.x + ";" + previousRealPosition.x + ";" + previousPosition.y + ";" + previousRealPosition.y + ";" + previousPosition.z + ";" + previousRealPosition.z + ";" + previousYRotation + ";" + previousRealRotation);
             }
         }
         catch (Exception e)
@@ -162,15 +181,15 @@ public class RedirectionManager : MonoBehaviour
             Debug.LogError("Error saving position to file: " + e.Message);
         }
         
-        SendFirebaseData(previousPosition.x, previousRealPosition.x, previousPosition.z, previousRealPosition.z, previousXRotation, previousRealRotation);
+        SendFirebaseData(previousPosition.x, previousRealPosition.x, previousPosition.z, previousRealPosition.z, previousYRotation, previousRealRotation);
     }
 
     private void injectRotation()
     {
-        float currentXRotation = mainCamera.transform.rotation.eulerAngles.y;
+        float currentYRotation = mainCamera.transform.rotation.eulerAngles.y;
 
         // Calculate the change in rotation
-        float change = currentXRotation - previousXRotation;
+        float change = currentYRotation - previousYRotation;
 
         // Adjust for full rotations
         if (Mathf.Abs(change) > 180f)
@@ -185,64 +204,40 @@ public class RedirectionManager : MonoBehaviour
     private void injectTranslation()
     {
         Vector3 currentPosition = mainCamera.transform.position;
+
+        // Calculating the change in position
         Vector3 positionChange = translationGain * (currentPosition - previousPosition);
+
+        // Apply the translation to the gameobject
         cameraOffset.transform.Translate(new Vector3(positionChange.x, 0, positionChange.z), Space.World);
     }
 
     private void injectCurvature()
     {
         Vector3 currentPosition = mainCamera.transform.position;
+
+        // Calculating the change in position
         Vector3 positionChange = currentPosition - previousPosition;
 
+        // Applying curvature to the game object
         cameraOffset.transform.RotateAround(mainCamera.transform.position, Vector3.up, curvatureGain * positionChange.magnitude);
     }
 
     private void injectBending()
     {
-        float currentXRotation = mainCamera.transform.rotation.eulerAngles.y;
+        float currentYRotation = mainCamera.transform.rotation.eulerAngles.y;
         Vector3 currentPosition = mainCamera.transform.position;
+
+        // Calculating the change in position
         Vector3 positionChange = currentPosition - previousPosition;
 
         // Calculate the bending gain effect based on the user's head rotation
-        float bend = Mathf.DeltaAngle(currentXRotation, previousXRotation);
+        float bend = Mathf.DeltaAngle(currentYRotation, previousYRotation);
 
-
-
-        Debug.Log("angle: " + bend.ToString("F10"));
-
-        if (bend < 0)
-        {
-            cameraOffset.transform.RotateAround(mainCamera.transform.position, Vector3.up, -bendingGain * positionChange.magnitude * Math.Abs(bend));
-        }
-        else if (bend > 0)
-        {
-            cameraOffset.transform.RotateAround(mainCamera.transform.position, Vector3.up, bendingGain * positionChange.magnitude * Math.Abs(bend));
-        }
+        // Applying bending to the gameobject
+        cameraOffset.transform.RotateAround(mainCamera.transform.position, Vector3.up, bendingGain * positionChange.magnitude * bend);
+      
     }
-
-    private Vector3 RotateVectorAroundAxis(Vector3 vector, Vector3 axis, float angle)
-    {
-        float angleRad = angle * Mathf.Deg2Rad;
-        float cosAngle = (float)Math.Cos(angleRad);
-        float sinAngle = (float)Math.Sin(angleRad);
-
-        return cosAngle * vector +
-            (1 - cosAngle) * Vector3.Dot(axis, vector) * axis +
-            sinAngle * Vector3.Cross(axis, vector);
-
-    }
-
-    private Vector3 RotatePointAroundOrigin(Vector3 point, float angle)
-    {
-        // Create a quaternion representing the rotation
-        Quaternion rotation = Quaternion.Euler(0, 0, angle);
-
-        // Rotate the point using the quaternion
-        Vector3 rotatedPoint = rotation * point;
-
-        return rotatedPoint;
-    }
-
 
     public void rotationToggled()
     {
