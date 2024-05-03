@@ -1,5 +1,6 @@
+/* eslint-disable react/prop-types */
 import { useRef, useEffect } from "react";
-import { Box } from "@chakra-ui/react";
+import { Container } from "react-bootstrap";
 import * as d3 from "d3";
 
 const CoordinateGridMapper = ({ sessionData }) => {
@@ -123,7 +124,7 @@ const CoordinateGridMapper = ({ sessionData }) => {
 
   return (
     <div>
-      <Box display="flex" justifyContent="center" marginBottom="10px">
+      <Container display="flex" justifyContent="center" marginBottom="10px">
         <div
           style={{ display: "flex", alignItems: "center", marginRight: "20px" }}
         >
@@ -146,10 +147,10 @@ const CoordinateGridMapper = ({ sessionData }) => {
           </svg>
           <span style={{ marginLeft: "5px", color: "black" }}>Start</span>
         </div>
-      </Box>
-      <Box>
+      </Container>
+      <Container>
         <svg ref={svgRef}></svg>
-      </Box>
+      </Container>
     </div>
   );
 };

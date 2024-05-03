@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { Box, Button } from "@chakra-ui/react";
-import SessionTable from "./SessionTable";
-import SessionSelector from "./SessionSelector";
+/* eslint-disable react/prop-types */
+// importing libraries
+import { Container, Button } from "react-bootstrap";
+// importing components
 import DataTable from "./DataTable";
+import SessionTable from "./SessionTable";
 import CoordinateGrid from "./CoordinateGrid";
-// import { sessionDetails } from "../sessionData";
+import SessionSelector from "./SessionSelector";
 
 const SessionNavigation = ({
   sessionData,
@@ -19,16 +20,18 @@ const SessionNavigation = ({
   setSelectedTestSequence,
 }) => {
   return (
-    <Box>
+    <>
       {!sessionDetails ? (
-        <Box>
-          <SessionSelector
-            onSessionChange={handleSessionChange}
-            selectedDate={selectedDate}
-            selectedTestSequence={selectedTestSequence}
-            setSelectedTestSequence={setSelectedTestSequence}
-            setSelectedDate={setSelectedDate}
-          />
+        <>
+          <Container>
+            <SessionSelector
+              onSessionChange={handleSessionChange}
+              selectedDate={selectedDate}
+              selectedTestSequence={selectedTestSequence}
+              setSelectedTestSequence={setSelectedTestSequence}
+              setSelectedDate={setSelectedDate}
+            />
+          </Container>
           <SessionTable
             sessionData={sessionData}
             selectedDate={selectedDate}
@@ -37,18 +40,18 @@ const SessionNavigation = ({
               handleDetailsClick(sessionId, action);
             }}
           />
-        </Box>
+        </>
       ) : (
-        <Box>
+        <Container>
           <Button onClick={handleBack}>Back</Button>
           {selectedAction === "View Map" ? (
             <CoordinateGrid sessionData={sessionDetails} />
           ) : (
             <DataTable sessionData={sessionDetails} />
           )}
-        </Box>
+        </Container>
       )}
-    </Box>
+    </>
   );
 };
 

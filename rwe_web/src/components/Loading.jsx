@@ -1,23 +1,16 @@
-import { Spinner, Flex } from "@chakra-ui/react";
+import { Col, Container, Row, Spinner } from "react-bootstrap";
 
 const Loading = () => {
   return (
-    <Flex
-      top="0"
-      left="0"
-      width="100vw"
-      height="100vh"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Spinner
-        thickness="4px"
-        speed="0.65s"
-        emptyColor="gray.200"
-        color="blue.500"
-        size="xl"
-      />
-    </Flex>
+    <Container>
+      <Row className="py-4 mb-2">
+        <Col className="py-1 text-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

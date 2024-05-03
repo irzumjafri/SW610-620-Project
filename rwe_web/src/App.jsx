@@ -1,18 +1,23 @@
-import { Box, ChakraProvider } from "@chakra-ui/react";
-import Header from "./components/Header";
-import SessionNavigation from "./components/SessionNavigation";
+// importing libraries
 import { useState, useEffect } from "react";
 import { collection, getDocs, doc, orderBy, query } from "firebase/firestore";
-import { db } from "../firebase";
+// importing components
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 import Loading from "./components/Loading";
+import SessionNavigation from "./components/SessionNavigation";
+// importing firebase
+import { db } from "../firebase";
+import "./App.css";
 
 const App = () => {
   const [sessionDataFirebase, setSessionDataFirebase] = useState();
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState();
   const [selectedTestSequence, setSelectedTestSequence] = useState("");
   const [selectedAction, setSelectedAction] = useState("");
   const [sessionDetails, setSessionDetails] = useState(null);
   const [sessionId, setSessionId] = useState(null);
+  // new Date().toISOString().split("T")[0]
 
   useEffect(() => {
     handleFetchSessions();
@@ -26,7 +31,6 @@ const App = () => {
     querySnapshot.forEach((doc) => {
       data.push({ id: doc.id, ...doc.data() });
     });
-    // console.log(data);
     setSessionDataFirebase(data);
   };
 
@@ -44,8 +48,6 @@ const App = () => {
         subDocId: subDoc.id,
       });
     });
-
-    // console.log("Fetched data:", data);
 
     return data;
   };
@@ -72,32 +74,31 @@ const App = () => {
   };
 
   return (
-    <ChakraProvider>
-      <Box padding={16}>
-        <Header
-          handleFetchFirebase={handleFetchSessions}
+    <>
+      <Header
+        handleFetchFirebase={handleFetchSessions}
+        selectedAction={selectedAction}
+        sessionId={sessionId}
+        handleDetailsClick={handleDetailsClick}
+      />
+      {sessionDataFirebase ? (
+        <SessionNavigation
+          sessionData={sessionDataFirebase}
+          selectedDate={selectedDate}
+          selectedTestSequence={selectedTestSequence}
+          setSelectedTestSequence={setSelectedTestSequence}
+          setSelectedDate={setSelectedDate}
           selectedAction={selectedAction}
-          sessionId={sessionId}
+          sessionDetails={sessionDetails}
+          handleSessionChange={handleSessionChange}
+          handleBack={handleBack}
           handleDetailsClick={handleDetailsClick}
         />
-        {sessionDataFirebase ? (
-          <SessionNavigation
-            sessionData={sessionDataFirebase}
-            selectedDate={selectedDate}
-            selectedTestSequence={selectedTestSequence}
-            setSelectedTestSequence={setSelectedTestSequence}
-            setSelectedDate={setSelectedDate}
-            selectedAction={selectedAction}
-            sessionDetails={sessionDetails}
-            handleSessionChange={handleSessionChange}
-            handleBack={handleBack}
-            handleDetailsClick={handleDetailsClick}
-          />
-        ) : (
-          <Loading />
-        )}
-      </Box>
-    </ChakraProvider>
+      ) : (
+        <Loading />
+      )}
+      <Footer />
+    </>
   );
 };
 
