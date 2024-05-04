@@ -1,12 +1,14 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
+import { Card } from "react-bootstrap";
 import Loading from "./Loading";
 import CustomTable from "./CustomTable";
-import useWindowSize from "../hooks/use-window-dimentions.hook";
-import { Card } from "react-bootstrap";
+import useWindowSize from "../hooks/use-window-dimensions.hook";
+import { SessionContext } from "../contexts";
 
-const DataTable = ({ sessionData }) => {
+const DataTable = () => {
   const { width } = useWindowSize();
+  const { sessionDetails: sessionData } = useContext(SessionContext);
 
   useEffect(() => {
     if (!sessionData || sessionData.length === 0) {

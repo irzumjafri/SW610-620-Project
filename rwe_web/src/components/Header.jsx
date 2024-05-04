@@ -1,21 +1,20 @@
 /* eslint-disable react/prop-types */
-import { Col, Image, Row, Button } from "react-bootstrap";
+import { useContext } from "react";
 import { ArrowRepeat } from "react-bootstrap-icons";
+import { Col, Image, Row, Button } from "react-bootstrap";
+import { SessionContext } from "../contexts";
 import VR_PERSON from "../assets/vr_person.jpg";
 
-const Header = ({
-  handleFetchFirebase,
-  sessionId,
-  handleDetailsClick,
-  selectedAction,
-}) => {
+const Header = () => {
+  const { handleFetchFirebase, sessionId, handleDetailsClick, selectedAction } =
+    useContext(SessionContext);
+
   const handleSyncClick = () => {
     handleFetchFirebase();
     if (sessionId) {
       handleDetailsClick(sessionId, selectedAction);
     }
   };
-
   return (
     <div
       style={{

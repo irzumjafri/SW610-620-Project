@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Table } from "react-bootstrap";
-import useWindowDimension from "../hooks/use-window-dimentions.hook";
+import useWindowDimension from "../hooks/use-window-dimensions.hook";
 
 const CustomTable = ({ tableHeaders, bodyData }) => {
   const { width } = useWindowDimension();

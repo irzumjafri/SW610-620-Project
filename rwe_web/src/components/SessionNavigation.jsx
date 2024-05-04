@@ -1,59 +1,46 @@
 /* eslint-disable react/prop-types */
 // importing libraries
+import { useContext } from "react";
 import { Container, Button } from "react-bootstrap";
 // importing components
+import Loading from "./Loading";
 import DataTable from "./DataTable";
 import SessionTable from "./SessionTable";
 import CoordinateGrid from "./CoordinateGrid";
 import SessionSelector from "./SessionSelector";
+import { SessionContext } from "../contexts";
 
-const SessionNavigation = ({
-  sessionData,
-  selectedDate,
-  selectedTestSequence,
-  selectedAction,
-  sessionDetails,
-  handleBack,
-  handleSessionChange,
-  handleDetailsClick,
-  setSelectedDate,
-  setSelectedTestSequence,
-}) => {
+const SessionNavigation = () => {
+  const { selectedAction, sessionDetails, handleBack, sessionDataFirebase } =
+    useContext(SessionContext);
   return (
     <>
-      {!sessionDetails ? (
+      {sessionDataFirebase ? (
         <>
-          <Container>
-            <SessionSelector
-              onSessionChange={handleSessionChange}
-              selectedDate={selectedDate}
-              selectedTestSequence={selectedTestSequence}
-              setSelectedTestSequence={setSelectedTestSequence}
-              setSelectedDate={setSelectedDate}
-            />
-          </Container>
-          <SessionTable
-            sessionData={sessionData}
-            selectedDate={selectedDate}
-            selectedTestSequence={selectedTestSequence}
-            onViewDetails={(sessionId, action) => {
-              handleDetailsClick(sessionId, action);
-            }}
-          />
-        </>
-      ) : (
-        <div style={{ background: "#4E008E1A" }}>
-          <Button className="px-5 py-5" variant="link" onClick={handleBack}>
-            Back
-          </Button>
-          {selectedAction === "View Map" ? (
-            <CoordinateGrid sessionData={sessionDetails} />
+          {!sessionDetails ? (
+            <>
+              <Container>
+                <SessionSelector />
+              </Container>
+              <SessionTable />
+            </>
           ) : (
-            <div className="px-5 pb-3">
-              <DataTable sessionData={sessionDetails} />
+            <div style={{ background: "#4E008E1A" }}>
+              <Button className="px-5 py-5" variant="link" onClick={handleBack}>
+                Back
+              </Button>
+              {selectedAction === "View Map" ? (
+                <CoordinateGrid />
+              ) : (
+                <div className="px-5 pb-3">
+                  <DataTable />
+                </div>
+              )}
             </div>
           )}
-        </div>
+        </>
+      ) : (
+        <Loading />
       )}
     </>
   );

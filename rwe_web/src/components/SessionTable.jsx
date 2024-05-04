@@ -2,8 +2,9 @@
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { FileText, Map } from "react-bootstrap-icons";
 import CustomTable from "./CustomTable";
-import useWindowSize from "../hooks/use-window-dimentions.hook";
-import React from "react";
+import useWindowSize from "../hooks/use-window-dimensions.hook";
+import React, { useContext } from "react";
+import { SessionContext } from "../contexts";
 
 function formatFirebaseTimestamp(timestamp) {
   const date = timestamp.toDate();
@@ -14,13 +15,15 @@ function formatFirebaseTimestamp(timestamp) {
   return `${year}-${month}-${day}`;
 }
 
-const SessionTable = ({
-  sessionData,
-  selectedDate,
-  selectedTestSequence,
-  onViewDetails,
-}) => {
+const SessionTable = () => {
   const { width } = useWindowSize();
+  const {
+    sessionData,
+    selectedDate,
+    selectedTestSequence,
+    handleDetailsClick: onViewDetails,
+  } = useContext(SessionContext);
+
   const tableHeaders = [
     "Date",
     "Time",

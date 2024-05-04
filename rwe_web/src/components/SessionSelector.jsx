@@ -1,14 +1,18 @@
 /* eslint-disable react/prop-types */
 // SessionSelector.jsx
+import { useContext } from "react";
 import { Row, Form, Col } from "react-bootstrap";
+import { SessionContext } from "../contexts";
 
-const SessionSelector = ({
-  onSessionChange,
-  selectedDate,
-  setSelectedDate,
-  selectedTestSequence,
-  setSelectedTestSequence,
-}) => {
+const SessionSelector = () => {
+  const {
+    handleSessionChange: onSessionChange,
+    selectedDate,
+    setSelectedDate,
+    selectedTestSequence,
+    setSelectedTestSequence,
+  } = useContext(SessionContext);
+
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value);
     onSessionChange(event.target.value, selectedTestSequence);
