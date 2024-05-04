@@ -35,7 +35,6 @@ const App = () => {
   };
 
   const handleFetchSessionDetails = async (documentId) => {
-    console.log("Fetching data for session: ", documentId);
     const docRef = doc(db, "LoggedData", documentId);
     const subCollectionSnapshot = await getDocs(
       query(collection(docRef, "Data"), orderBy("timestamp"))

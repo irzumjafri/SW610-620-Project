@@ -42,14 +42,18 @@ const SessionNavigation = ({
           />
         </>
       ) : (
-        <Container>
-          <Button onClick={handleBack}>Back</Button>
+        <div style={{ background: "#4E008E1A" }}>
+          <Button className="px-5 py-5" variant="link" onClick={handleBack}>
+            Back
+          </Button>
           {selectedAction === "View Map" ? (
             <CoordinateGrid sessionData={sessionDetails} />
           ) : (
-            <DataTable sessionData={sessionDetails} />
+            <div className="px-5 pb-3">
+              <DataTable sessionData={sessionDetails} />
+            </div>
           )}
-        </Container>
+        </div>
       )}
     </>
   );

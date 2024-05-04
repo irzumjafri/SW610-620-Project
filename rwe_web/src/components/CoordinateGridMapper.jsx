@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import { useRef, useEffect } from "react";
-import { Container } from "react-bootstrap";
 import * as d3 from "d3";
 
 const CoordinateGridMapper = ({ sessionData }) => {
@@ -123,35 +122,51 @@ const CoordinateGridMapper = ({ sessionData }) => {
   }, [sessionData]);
 
   return (
-    <div>
-      <Container display="flex" justifyContent="center" marginBottom="10px">
-        <div
-          style={{ display: "flex", alignItems: "center", marginRight: "20px" }}
-        >
+    <>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div className="mx-2">
           <svg width="20" height="20">
             <circle cx="10" cy="10" r="6" fill="blue" />
           </svg>
-          <span style={{ marginLeft: "5px", color: "blue" }}>VR</span>
+          <span className="mx-1" style={{ color: "blue" }}>
+            VR
+          </span>
         </div>
-        <div
-          style={{ display: "flex", alignItems: "center", marginRight: "20px" }}
-        >
+        <div className="mx-2">
           <svg width="20" height="20">
             <circle cx="10" cy="10" r="6" fill="red" />
           </svg>
-          <span style={{ marginLeft: "5px", color: "red" }}>Real</span>
+          <span className="mx-1" style={{ color: "red" }}>
+            Real
+          </span>
         </div>
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div className="mx-2">
           <svg width="20" height="20">
             <circle cx="10" cy="10" r="6" fill="black" />
           </svg>
-          <span style={{ marginLeft: "5px", color: "black" }}>Start</span>
+          <span className="mx-1" style={{ marginLeft: "5px", color: "black" }}>
+            Start
+          </span>
         </div>
-      </Container>
-      <Container>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <svg ref={svgRef}></svg>
-      </Container>
-    </div>
+      </div>
+    </>
   );
 };
 

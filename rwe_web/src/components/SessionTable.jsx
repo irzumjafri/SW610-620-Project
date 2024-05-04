@@ -1,6 +1,9 @@
 /* eslint-disable react/prop-types */
-import { Button, Col, Row, Table } from "react-bootstrap";
+import { Button, Card, Col, Row } from "react-bootstrap";
 import { FileText, Map } from "react-bootstrap-icons";
+import CustomTable from "./CustomTable";
+import useWindowSize from "../hooks/use-window-dimentions.hook";
+import React from "react";
 
 function formatFirebaseTimestamp(timestamp) {
   const date = timestamp.toDate();
@@ -17,6 +20,14 @@ const SessionTable = ({
   selectedTestSequence,
   onViewDetails,
 }) => {
+  const { width } = useWindowSize();
+  const tableHeaders = [
+    "Date",
+    "Time",
+    "Session ID",
+    "Test Sequence",
+    "Actions",
+  ];
   const filteredSessions = Object.values(sessionData).filter((session) => {
     if (selectedDate && formatFirebaseTimestamp(session.date) !== selectedDate)
       return false;
@@ -30,77 +41,116 @@ const SessionTable = ({
       {filteredSessions.length === 0 ? (
         <p>No sessions found for the selected date or test sequence.</p>
       ) : (
-        <Table bordered hover responsive>
-          <thead>
-            <tr
-              className="text-center"
-              style={{ border: "0.1rem solid #4E008ECC" }}
-            >
-              <th style={{ backgroundColor: "#4E008ECC", color: "white" }}>
-                Date
-              </th>
-              <th style={{ backgroundColor: "#4E008ECC", color: "white" }}>
-                Time
-              </th>
-              <th style={{ backgroundColor: "#4E008ECC", color: "white" }}>
-                Session ID
-              </th>
-              <th style={{ backgroundColor: "#4E008ECC", color: "white" }}>
-                Test Sequence
-              </th>
-              <th style={{ backgroundColor: "#4E008ECC", color: "white" }}>
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredSessions.map((session) => (
-              <tr
-                key={session.id}
-                className="text-center"
-                style={{ border: "0.1rem solid #4E008ECC" }}
-              >
-                <td>{session.date.toDate().toDateString()}</td>
-                <td>{session.date.toDate().toLocaleTimeString("en-US")}</td>
-                <td>{session.id}</td>
-                <td>{session.test_sequence}</td>
-                <td>
-                  <Row>
-                    <Col sm={12} md={12} lg={9}>
-                      <Button
-                        variant=""
-                        className="w-100"
-                        id="viewDetailsButton"
-                        onClick={() => onViewDetails(session.id, "View Table")}
-                      >
-                        <FileText className="mx-2" /> Details
-                      </Button>
-                    </Col>
-                    <Col sm={12} md={12} lg={3}>
-                      <Button
-                        variant=""
-                        className="m-0 p-0"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          borderRadius: "0%",
-                          border: "0.1rem solid #4E008EE6",
-                        }}
-                        onClick={() => onViewDetails(session.id, "View Map")}
-                      >
-                        <Map
+        <CustomTable
+          tableHeaders={tableHeaders}
+          bodyData={filteredSessions.map((session) => (
+            <React.Fragment key={session.id}>
+              {width > 875 ? (
+                <tr
+                  className="text-center"
+                  style={{ border: "0.1rem solid #4E008ECC" }}
+                >
+                  <td>{session.date.toDate().toDateString()}</td>
+                  <td>{session.date.toDate().toLocaleTimeString("en-US")}</td>
+                  <td>{session.id}</td>
+                  <td>{session.test_sequence}</td>
+                  <td>
+                    <Row>
+                      <Col sm={12} md={12} lg={9}>
+                        <Button
+                          variant=""
+                          className="w-100"
+                          id="viewDetailsButton"
+                          onClick={() =>
+                            onViewDetails(session.id, "View Table")
+                          }
+                        >
+                          <FileText className="mx-2" /> Details
+                        </Button>
+                      </Col>
+                      <Col sm={12} md={12} lg={3}>
+                        <Button
+                          variant=""
+                          className="m-0 p-0"
                           style={{
-                            color: "#4E008EE6",
+                            width: "100%",
+                            height: "100%",
+                            borderRadius: "0%",
+                            border: "0.1rem solid #4E008EE6",
                           }}
-                        />
-                      </Button>
-                    </Col>
-                  </Row>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+                          onClick={() => onViewDetails(session.id, "View Map")}
+                        >
+                          <Map
+                            style={{
+                              color: "#4E008EE6",
+                            }}
+                          />
+                        </Button>
+                      </Col>
+                    </Row>
+                  </td>
+                </tr>
+              ) : (
+                <Card
+                  style={{
+                    width: "100%",
+                    borderRadius: "0%",
+                    border: "0.1rem solid #4E008EE6",
+                  }}
+                  className="mb-2"
+                >
+                  <Card.Body>
+                    <Card.Title>
+                      Test Sequence - {session.test_sequence}
+                    </Card.Title>
+                    <Card.Text>
+                      Date - {session.date.toDate().toDateString()}
+                      <br />
+                      Time - {session.date.toDate().toLocaleTimeString("en-US")}
+                      <br />
+                      Session ID -{session.id}
+                    </Card.Text>
+                  </Card.Body>
+                  <Card.Footer>
+                    <Row>
+                      <Col xs={6} sm={6} md={6} lg={6}>
+                        <Button
+                          variant=""
+                          className="w-100 flex-wrap"
+                          id="viewDetailsButton"
+                          onClick={() =>
+                            onViewDetails(session.id, "View Table")
+                          }
+                        >
+                          <FileText className="mx-2" /> Details
+                        </Button>
+                      </Col>
+                      <Col xs={6} sm={6} md={6} lg={6}>
+                        <Button
+                          variant=""
+                          className="m-0 p-0"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            borderRadius: "0%",
+                            border: "0.1rem solid #4E008EE6",
+                          }}
+                          onClick={() => onViewDetails(session.id, "View Map")}
+                        >
+                          <Map
+                            style={{
+                              color: "#4E008EE6",
+                            }}
+                          />
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Card.Footer>
+                </Card>
+              )}
+            </React.Fragment>
+          ))}
+        />
       )}
     </div>
   );

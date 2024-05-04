@@ -23,7 +23,19 @@
   background-color: white;
 }
 
+/* #syncButton:active #arrayRepeat {
+  animation: rotate 1s ease-in-out;
+  transform: translateY(4px);
+} */
 #syncButton:hover #arrayRepeat {
+  /* opacity: 0; */
+  animation: rotate 1s ease-in-out;
+  transition: all 0.8s
+}
+
+#syncButton:after #arrayRepeat{
+  opacity: 1;
+  transition: 0s;
   animation: rotate 1s ease-in-out;
 }
 
