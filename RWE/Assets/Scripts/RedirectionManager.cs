@@ -239,52 +239,24 @@ public class RedirectionManager : MonoBehaviour
       
     }
 
-    public void rotationToggled()
+    public void SetRotationActive(bool state)
     {
-        if (rotationActive)
-        {
-            rotationActive = false;
-        }
-        else
-        {
-            rotationActive = true;
-        }
+        rotationActive = state;
     }
 
-    public void translationToggled()
+    public void SetCurvatureActive(bool state)
     {
-        if (translationActive)
-        {
-            translationActive = false;
-        }
-        else
-        {
-            translationActive = true;
-        }
+        curvingActive = state;
     }
 
-    public void bendingToggled()
+    public void SetTranslationActive(bool state)
     {
-        if (bendingActive)
-        {
-            bendingActive = false;
-        }
-        else
-        {
-            bendingActive = true;
-        }
+        translationActive = state;
     }
 
-    public void curvatureToggled()
+    public void SetBendingActive(bool state)
     {
-        if (curvingActive)
-        {
-            curvingActive = false;
-        }
-        else
-        {
-            curvingActive = true;
-        }
+        bendingActive = state;
     }
 
     public void setRotationMultiplier(float multiplier)

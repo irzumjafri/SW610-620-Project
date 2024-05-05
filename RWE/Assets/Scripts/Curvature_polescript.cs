@@ -47,12 +47,14 @@ public class Point_generator : MonoBehaviour
     public bool rotTest;
     [Tooltip("Boolean to indicate is bending testsequence active")]
     public bool bendTest;
+    [Tooltip("Boolean to indicate is bending S testsequence active")]
+    public bool bendSTest;
     [Tooltip("Boolean to indicate is random testsequence active")]
     public bool randTest;
 
     private bool initialized = false;
 
-    public void InitializeTest(bool curvatureTest, bool rotationTest, bool bendingTest, bool randomTest)
+    public void InitializeTest(bool curvatureTest, bool rotationTest, bool bendingTest, bool bendingSTest, bool randomTest)
     {
    
         // Check which testin sequence is activated
@@ -72,6 +74,11 @@ public class Point_generator : MonoBehaviour
         { 
             polePoints = Vector_manager.Bending_points; 
             bendTest = bendingTest; 
+        }
+        else if (bendingSTest)
+        {
+            polePoints = Vector_manager.Bending_S_points;
+            bendSTest = bendingSTest;
         }
 
         else if (randomTest)
@@ -133,6 +140,7 @@ public class Point_generator : MonoBehaviour
         curTest = false;
         rotTest = false;
         bendTest = false;
+        bendSTest = false;
         randTest = false;
 
         currentPoleIndex = 0;
@@ -191,7 +199,7 @@ public class Point_generator : MonoBehaviour
         }
 
         if (bendTest) {CreateCirclePath();}
-        else if(curTest){CreateSplinePath();}
+        else if(bendSTest){CreateSplinePath();}
         else { CreatePath(); }
         
 

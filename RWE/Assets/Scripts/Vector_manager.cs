@@ -40,6 +40,14 @@ public class Vector_manager : MonoBehaviour
         new Vector3(3.962f, 0f, -3.962f)
     };
 
+    public static Vector3[] Bending_S_points = new Vector3[]
+    {
+        new Vector3(3f, 0f, 3f),
+        new Vector3(0f, 0f, 6f),
+        new Vector3(-3f, 0f, 9f),
+        new Vector3(0f, 0f, 12f),
+    };
+
     public static void ResetState()
     {
         // Reset Curvature_points
@@ -76,6 +84,14 @@ public class Vector_manager : MonoBehaviour
             new Vector3(-3.962f, 0f, -3.962f),
             new Vector3(0f, 0f, -5.6f),
             new Vector3(3.962f, 0f, -3.962f)
+        };
+
+        Bending_S_points = new Vector3[]
+        {
+            new Vector3(3f, 0f, 3f),
+            new Vector3(0f, 0f, 6f),
+            new Vector3(-3f, 0f, 9f),
+            new Vector3(0f, 0f, 12f),
         };
     }
 }

@@ -8,28 +8,40 @@ public class tabManager : MonoBehaviour
     public GameObject button1;
     public GameObject button2;
     public GameObject button3;
+    public GameObject button4;
 
     public GameObject tab1;
     public GameObject tab2;
     public GameObject tab3;
+    public GameObject tab4;
 
     public void Activate1()
     {
         tab1.SetActive(true);
         tab2.SetActive(false);
         tab3.SetActive(false);
+        tab4.SetActive(false);
     }
     public void Activate2()
     {
         tab1.SetActive(false);
         tab2.SetActive(true);
         tab3.SetActive(false);
+        tab4.SetActive(false);
     }
     public void Activate3()
     {
         tab1.SetActive(false);
         tab2.SetActive(false);
         tab3.SetActive(true);
+        tab4.SetActive(false);
     }
-    
+    public void Activate4()
+    {
+        tab1.SetActive(false);
+        tab2.SetActive(false);
+        tab3.SetActive(false);
+        tab4.SetActive(true);
+    }
+
 }
