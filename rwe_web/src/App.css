@@ -1,0 +1,71 @@
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#syncButton {
+  color: white;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 0%;
+  align-items: center;
+  justify-content: center;
+  border: 0.1rem solid white;
+  background-color:  #610aa8cc;
+}
+
+#syncButton:hover {
+  color: #4E008E;
+  background-color: white;
+}
+
+/* #syncButton:active #arrayRepeat {
+  animation: rotate 1s ease-in-out;
+  transform: translateY(4px);
+} */
+#syncButton:hover #arrayRepeat {
+  /* opacity: 0; */
+  animation: rotate 1s ease-in-out;
+  transition: all 0.8s
+}
+
+#syncButton:after #arrayRepeat{
+  opacity: 1;
+  transition: 0s;
+  animation: rotate 1s ease-in-out;
+}
+
+.footer {
+  cursor: pointer;
+}
+
+#viewDetailsButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  border-radius: 0%;
+  background-color: #4E008ECC;
+}
+
+#viewDetailsButton:hover {
+  background-color: #4E008E;
+}
+
+.text-glow {
+  animation: scale 1s normal;
+}
+
+@keyframes scale {
+  0% {
+    transform: scale(0.8);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
