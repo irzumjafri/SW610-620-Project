@@ -6,21 +6,21 @@ import { SessionContext } from "../contexts";
 
 const SessionSelector = () => {
   const {
-    handleSessionChange: onSessionChange,
     selectedDate,
     setSelectedDate,
+    handleSessionChange,
     selectedTestSequence,
     setSelectedTestSequence,
   } = useContext(SessionContext);
 
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value);
-    onSessionChange(event.target.value, selectedTestSequence);
+    handleSessionChange(event.target.value, selectedTestSequence);
   };
 
   const handleTestSequenceChange = (event) => {
     setSelectedTestSequence(event.target.value);
-    onSessionChange(selectedDate, event.target.value);
+    handleSessionChange(selectedDate, event.target.value);
   };
 
   return (

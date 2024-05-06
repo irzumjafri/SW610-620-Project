@@ -123,14 +123,7 @@ const CoordinateGridMapper = ({ sessionData }) => {
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <div className="d-flex flex-row justify-content-center align-items-center">
         <div className="mx-2">
           <svg width="20" height="20">
             <circle cx="10" cy="10" r="6" fill="blue" />
@@ -156,14 +149,7 @@ const CoordinateGridMapper = ({ sessionData }) => {
           </span>
         </div>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <div className="d-flex flex-row justify-content-center align-items-center">
         <svg ref={svgRef}></svg>
       </div>
     </>

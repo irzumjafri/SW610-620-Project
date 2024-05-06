@@ -8,15 +8,15 @@ import { SessionContext } from "../contexts";
 
 const DataTable = () => {
   const { width } = useWindowSize();
-  const { sessionDetails: sessionData } = useContext(SessionContext);
+  const { sessionDetails } = useContext(SessionContext);
 
   useEffect(() => {
-    if (!sessionData || sessionData.length === 0) {
+    if (!sessionDetails || sessionDetails.length === 0) {
       return;
     }
-  }, [sessionData]);
+  }, [sessionDetails]);
 
-  if (!sessionData) {
+  if (!sessionDetails) {
     return <Loading />;
   } else {
     return (
@@ -29,7 +29,7 @@ const DataTable = () => {
           "rotation",
           "real rotation",
         ]}
-        bodyData={sessionData.map((item, index) => (
+        bodyData={sessionDetails.map((item, index) => (
           <React.Fragment key={index}>
             {width > 875 ? (
               <tr key={index} className="text-center">
@@ -42,12 +42,8 @@ const DataTable = () => {
               </tr>
             ) : (
               <Card
-                style={{
-                  width: "100%",
-                  borderRadius: "0%",
-                  border: "0.1rem solid #4E008EE6",
-                }}
-                className="mb-2"
+                className="mb-2 w-100 rounded-0"
+                style={{ border: "0.1rem solid #4E008EE6" }}
               >
                 <Card.Body>
                   <Card.Text>

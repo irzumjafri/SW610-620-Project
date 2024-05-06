@@ -16,7 +16,8 @@ const CustomTable = ({ tableHeaders, bodyData }) => {
               {tableHeaders.map((header) => (
                 <th
                   key={header}
-                  style={{ backgroundColor: "#4E008ECC", color: "white" }}
+                  className="text-light"
+                  style={{ backgroundColor: "#4E008ECC" }}
                 >
                   {header}
                 </th>

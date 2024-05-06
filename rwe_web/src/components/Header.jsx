@@ -6,46 +6,26 @@ import { SessionContext } from "../contexts";
 import VR_PERSON from "../assets/vr_person.jpg";
 
 const Header = () => {
-  const { handleFetchFirebase, sessionId, handleDetailsClick, selectedAction } =
+  const { handleFetchSessions, sessionId, handleDetailsClick, selectedAction } =
     useContext(SessionContext);
 
   const handleSyncClick = () => {
-    handleFetchFirebase();
+    handleFetchSessions();
     if (sessionId) {
       handleDetailsClick(sessionId, selectedAction);
     }
   };
   return (
-    <div
-      style={{
-        height: "300px",
-        position: "relative",
-      }}
-    >
+    <div className="image-handler">
       <Image
         fluid
         src={VR_PERSON}
         alt="Description of header image"
-        style={{
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          position: "absolute",
-        }}
+        className="w-100 h-100 position-absolute object-fit-cover top-0 left-0"
       />
       <Row
-        className="m-0 p-0"
-        style={{
-          color: "white",
-          height: "300px",
-          minWidth: "100%",
-          position: "relative",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#4E008E80",
-        }}
+        style={{ backgroundColor: "#4E008E80" }}
+        className="image-handler m-0 p-0 text-light align-items-center justify-content-center"
       >
         <Col xs={6} sm={6} md={6} lg={7}></Col>
         <Col xs={6} sm={6} md={6} lg={5} className="text-glow">

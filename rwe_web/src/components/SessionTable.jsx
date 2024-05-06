@@ -18,10 +18,10 @@ function formatFirebaseTimestamp(timestamp) {
 const SessionTable = () => {
   const { width } = useWindowSize();
   const {
-    sessionData,
     selectedDate,
+    handleDetailsClick,
+    sessionDataFirebase,
     selectedTestSequence,
-    handleDetailsClick: onViewDetails,
   } = useContext(SessionContext);
 
   const tableHeaders = [
@@ -31,13 +31,21 @@ const SessionTable = () => {
     "Test Sequence",
     "Actions",
   ];
-  const filteredSessions = Object.values(sessionData).filter((session) => {
-    if (selectedDate && formatFirebaseTimestamp(session.date) !== selectedDate)
-      return false;
-    if (selectedTestSequence && session.test_sequence !== selectedTestSequence)
-      return false;
-    return true;
-  });
+  const filteredSessions = Object.values(sessionDataFirebase).filter(
+    (session) => {
+      if (
+        selectedDate &&
+        formatFirebaseTimestamp(session.date) !== selectedDate
+      )
+        return false;
+      if (
+        selectedTestSequence &&
+        session.test_sequence !== selectedTestSequence
+      )
+        return false;
+      return true;
+    }
+  );
 
   return (
     <div className="px-5 py-5" style={{ background: "#4E008E1A" }}>
@@ -65,7 +73,7 @@ const SessionTable = () => {
                           className="w-100"
                           id="viewDetailsButton"
                           onClick={() =>
-                            onViewDetails(session.id, "View Table")
+                            handleDetailsClick(session.id, "View Table")
                           }
                         >
                           <FileText className="mx-2" /> Details
@@ -74,20 +82,13 @@ const SessionTable = () => {
                       <Col sm={12} md={12} lg={3}>
                         <Button
                           variant=""
-                          className="m-0 p-0"
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            borderRadius: "0%",
-                            border: "0.1rem solid #4E008EE6",
-                          }}
-                          onClick={() => onViewDetails(session.id, "View Map")}
+                          className="m-0 p-0 w-100 h-100 rounded-0"
+                          style={{ border: "0.1rem solid #4E008EE6" }}
+                          onClick={() =>
+                            handleDetailsClick(session.id, "View Map")
+                          }
                         >
-                          <Map
-                            style={{
-                              color: "#4E008EE6",
-                            }}
-                          />
+                          <Map style={{ color: "#4E008EE6" }} />
                         </Button>
                       </Col>
                     </Row>
@@ -95,12 +96,8 @@ const SessionTable = () => {
                 </tr>
               ) : (
                 <Card
-                  style={{
-                    width: "100%",
-                    borderRadius: "0%",
-                    border: "0.1rem solid #4E008EE6",
-                  }}
-                  className="mb-2"
+                  className="mb-2 w-100 roudned-0"
+                  style={{ border: "0.1rem solid #4E008EE6" }}
                 >
                   <Card.Body>
                     <Card.Title>
@@ -119,10 +116,10 @@ const SessionTable = () => {
                       <Col xs={6} sm={6} md={6} lg={6}>
                         <Button
                           variant=""
-                          className="w-100 flex-wrap"
                           id="viewDetailsButton"
+                          className="w-100 flex-wrap"
                           onClick={() =>
-                            onViewDetails(session.id, "View Table")
+                            handleDetailsClick(session.id, "View Table")
                           }
                         >
                           <FileText className="mx-2" /> Details
@@ -131,20 +128,13 @@ const SessionTable = () => {
                       <Col xs={6} sm={6} md={6} lg={6}>
                         <Button
                           variant=""
-                          className="m-0 p-0"
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            borderRadius: "0%",
-                            border: "0.1rem solid #4E008EE6",
-                          }}
-                          onClick={() => onViewDetails(session.id, "View Map")}
+                          className="m-0 p-0 w-100 h-100 rounded-0"
+                          style={{ border: "0.1rem solid #4E008EE6" }}
+                          onClick={() =>
+                            handleDetailsClick(session.id, "View Map")
+                          }
                         >
-                          <Map
-                            style={{
-                              color: "#4E008EE6",
-                            }}
-                          />
+                          <Map style={{ color: "#4E008EE6" }} />
                         </Button>
                       </Col>
                     </Row>

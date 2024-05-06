@@ -6,12 +6,12 @@ import { db } from "../../firebase";
 export const SessionContext = createContext();
 
 const SessionContextProvider = ({ children }) => {
-  const [sessionDataFirebase, setSessionDataFirebase] = useState();
+  const [sessionId, setSessionId] = useState(null);
   const [selectedDate, setSelectedDate] = useState();
-  const [selectedTestSequence, setSelectedTestSequence] = useState("");
   const [selectedAction, setSelectedAction] = useState("");
   const [sessionDetails, setSessionDetails] = useState(null);
-  const [sessionId, setSessionId] = useState(null);
+  const [sessionDataFirebase, setSessionDataFirebase] = useState();
+  const [selectedTestSequence, setSelectedTestSequence] = useState("");
 
   useEffect(() => {
     handleFetchSessions();
@@ -68,19 +68,18 @@ const SessionContextProvider = ({ children }) => {
   return (
     <SessionContext.Provider
       value={{
-        handleFetchFirebase: handleFetchSessions,
-        selectedAction,
-        sessionId,
-        handleDetailsClick,
-        sessionData: sessionDataFirebase,
-        selectedDate,
-        selectedTestSequence,
         setSelectedTestSequence,
-        setSelectedDate,
-        sessionDetails,
+        selectedTestSequence,
+        handleFetchSessions,
         handleSessionChange,
-        handleBack,
         sessionDataFirebase,
+        handleDetailsClick,
+        setSelectedDate,
+        selectedAction,
+        sessionDetails,
+        selectedDate,
+        sessionId,
+        handleBack,
       }}
     >
       {children}

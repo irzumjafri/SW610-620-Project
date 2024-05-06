@@ -69,3 +69,8 @@
     transform: scale(1);
   }
 }
+
+.image-handler {
+  height: 300px;
+  position: relative;
+}

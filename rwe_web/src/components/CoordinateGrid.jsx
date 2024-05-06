@@ -8,13 +8,13 @@ const CoordinateGrid = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { sessionDetails: sessionData } = useContext(SessionContext);
+  const { sessionDetails } = useContext(SessionContext);
 
   useEffect(() => {
     setIsLoading(true);
-    setData(sessionData);
+    setData(sessionDetails);
     setIsLoading(false);
-  }, [sessionData]);
+  }, [sessionDetails]);
 
   if (isLoading) {
     return <Loading />;
