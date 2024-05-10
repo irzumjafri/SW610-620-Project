@@ -1,0 +1,8 @@
+{
+  "name": "com.tuni.rwe",
+  "version": "1.2.3",
+  "displayName": "Redirected walking module",
+  "description": "",
+  "unity": "2022.3",
+  "dependencies": {}
+}

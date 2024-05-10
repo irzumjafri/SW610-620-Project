@@ -1,13 +1,9 @@
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
 using System.IO;
 using Firebase;
-using Firebase.Database;
-using Firebase.Extensions;
 using Firebase.Firestore;
 using System.Threading.Tasks;
 using UnityEngine.Analytics;
