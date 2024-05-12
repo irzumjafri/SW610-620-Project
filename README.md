@@ -1,6 +1,6 @@
 **VR Redirected Walking Experiment**
 
-ADD PROJECT POSTER
+![Image](https://tuni-my.sharepoint.com/:i:/g/personal/jannaten_nayem_tuni_fi1/EdoTofg_WGpLlzP6MVvkoTcBPz3m4q9QuhrJLIzRfpNf8w?e=NCgz1S)
 
 ---
 
@@ -11,9 +11,12 @@ The project compromises of 2 modules:
 1. Room Mapping Module: The Room Mapping Module is responsible for creating a virtual space based on the physical environment in which the VR experience takes place. Using input from VR controllers, users can mark the room space excluding any walls, obstacles, and other environmental features that they want to leave out from the physical space. This digital map serves as the foundation for implementing redirected walking techniques by providing spatial constraints and boundaries for the user's movement within the virtual environment.
 2. Redirected Walikng Module: The Redirected Walking Module implements various techniques and algorithms to manipulate the user's perception of space in VR, allowing them to navigate larger virtual environments while physically confined to a smaller physical space. By subtly altering the user's movement trajectory using different gains implemented on the camera view, this module creates an artificial movement within the virtual world, even when the user's physical movements are limited. It incorporates techniques such as bending gain, rotation gain, curvature gain, and translation gain to achieve seamless redirection and enhance the user's VR experience.
 
-Here's a demo video of the project:
+Here's some demo videos of the project:
 
-ADD DEMO VIDEO
+[Translation Gain](https://tuni-my.sharepoint.com/:v:/g/personal/jannaten_nayem_tuni_fi1/EUKDCBj7cEhMvmWYwrocrEIB9WtsY8JmycO0TiSzdr2vXw?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=cJHMFY)
+[Rotation Gain](https://tuni-my.sharepoint.com/:v:/g/personal/jannaten_nayem_tuni_fi1/EfYR0bse6YJDlKA9-vZKKFsBnlks2SOjMJfIp9nknmfPJQ?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=4zzScr)
+[Bending Gain](https://tuni-my.sharepoint.com/:v:/g/personal/jannaten_nayem_tuni_fi1/EVyd8cGo4XpMtvVvIpcVaVgBdcQfbj2bYllAKAeIy8Ld2A?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=xEoFNF)
+[Curvature Gain](https://tuni-my.sharepoint.com/:v:/g/personal/jannaten_nayem_tuni_fi1/EVJlfeu46ndItFe7qFkNPoQBCwM8XzriWL4av2yJnWrN1A?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=SI4FyY)
 
 ---
 
@@ -71,7 +74,7 @@ To get started with the VR redirected walking experiment project, follow these s
 
 6. **Run the Experiment**: Build and run the VR application on your preferred VR hardware device (Tested on Meta Quest 2/3) to start experimenting with redirected walking techniques in virtual environments.
 
-7. **Collect and Analyze Data**: Gather data from user interactions and analyze the results from the [Web Application](https://rwe-data.netlify.app/) to gain insights into the effectiveness of redirected walking techniques in VR navigation.
+7. **Collect and Analyze Data**: Gather data from user interactions and analyze the results from the [Web Application](https://rwe-demo.vercel.app/) to gain insights into the effectiveness of redirected walking techniques in VR navigation.
 
 ---
 
