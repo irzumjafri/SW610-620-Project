@@ -1,6 +1,6 @@
 **VR Redirected Walking Experiment**
 
-![Image](https://tuni-my.sharepoint.com/:i:/g/personal/jannaten_nayem_tuni_fi1/EdoTofg_WGpLlzP6MVvkoTcBPz3m4q9QuhrJLIzRfpNf8w?e=NCgz1S)
+![Image](project_poster.jpg)
 
 ---
 
