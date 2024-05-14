@@ -11,7 +11,12 @@
       "version": "file:com.tuni.mapping",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {}
+      "dependencies": {
+        "com.meta.xr.sdk.core": "62.0.0",
+        "com.unity.xr.interaction.toolkit": "2.5.2",
+        "com.unity.textmeshpro": "3.0.8",
+        "com.unity.nuget.newtonsoft-json": "3.2.1"
+      }
     },
     "com.unity.burst": {
       "version": "1.8.12",
@@ -208,8 +213,8 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.textmeshpro": {
-      "version": "3.0.6",
-      "depth": 0,
+      "version": "3.0.8",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.ugui": "1.0.0"
