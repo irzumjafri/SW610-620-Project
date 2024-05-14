@@ -10,7 +10,7 @@ EditorBuildSettings:
     guid: 55daccc09a3b69647bbab145b54a3ab3
   - enabled: 1
     path: Assets/Samples/Mapping module/1.2.3/Mapping scene/MappingScene.unity
-    guid: 550da65c75b26e84aa6bb8bb7c145f63
+    guid: 375c102b0e47b4946982bf795f156c83
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: bfa1182bd221b4ca89619141f66f1260, type: 2}
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: dc5a169419fa04987b057f65238cf3ba, type: 2}
