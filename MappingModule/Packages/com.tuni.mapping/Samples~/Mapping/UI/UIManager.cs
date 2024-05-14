@@ -19,7 +19,6 @@ public class UIManager : Singleton<UIManager>
 
     public async Task HandleButton(ButtonType type, object o)
     {
-        Debug.Log("Got event " + type.ToString() + " " + o.ToString(), this);
         if (type == ButtonType.Reset)
         {
             Mapper.Instance.RestartMapping();
