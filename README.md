@@ -103,7 +103,7 @@ Add package by git url: https://github.com/irzumjafri/SW610-620-Project.git?path
 - Irzum Jafri
 - Jannaten Nayem
 - Rami Nurmoranta
-- Samu Tolijamo
+- Samu Toljamo
 - Tommi Moilanen
 - Veeti Salminen
 
