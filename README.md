@@ -62,7 +62,7 @@ Here's some demo videos of the project:
   
 ---
 
-## Getting Started
+## Getting Started RWE
 
 To get started with the VR redirected walking experiment project, follow these steps:
 
@@ -79,6 +79,24 @@ To get started with the VR redirected walking experiment project, follow these s
 7. **Collect and Analyze Data**: Gather data from user interactions and analyze the results from the [Web Application](https://rwe-demo.vercel.app/) to gain insights into the effectiveness of redirected walking techniques in VR navigation.
 
 ---
+## Getting Started with Mapping Module
+To get started with the Mapping Module, you can use the same steps outlined above, but you do not need to install the firebase SDK
+
+## Getting Started With Packages
+If you want to use the packages in your own project, you need to install them as dependencies to your project.
+### RWE
+1. **Install RWE**
+Add package by git url: https://github.com/irzumjafri/SW610-620-Project.git?path=/RWE/Packages/com.tuni.rwe
+2. Add an empty gameobject to your scene and attach the RedirectionManager-script to it.
+
+### Mapping
+1. **Install mapping module**
+Add package by git url: https://github.com/irzumjafri/SW610-620-Project.git?path=/MappingModule/Packages/com.tuni.mapping
+2. **Import the following XR Interaction Toolkit Samples from package manager**
+- Starter Assets
+- XR Device Simulator
+3. Import Mapping Scene from Mapping Module's samples
+4. Make sure your oculus configuration supports anchors and passthrough
 
 ## Contributors
 
