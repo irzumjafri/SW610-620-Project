@@ -85,9 +85,8 @@ To get started with the Mapping Module, you can use the same steps outlined abov
 ## Getting Started With Packages
 If you want to use the packages in your own project, you need to install them as dependencies to your project.
 ### RWE
-1. **Install RWE**
-Add package by git url: https://github.com/irzumjafri/SW610-620-Project.git?path=/RWE/Packages/com.tuni.rwe
-2. Add an empty gameobject to your scene and attach the RedirectionManager-script to it.
+1. **Install RWE**: Add package by git url: https://github.com/irzumjafri/SW610-620-Project.git?path=/RWE/Packages/com.tuni.rwe
+2. **Start using RWE**: Add an empty gameobject to your scene and attach the RedirectionManager-script to it.
 
 ### Mapping
 1. **Install mapping module**
@@ -95,8 +94,8 @@ Add package by git url: https://github.com/irzumjafri/SW610-620-Project.git?path
 2. **Import the following XR Interaction Toolkit Samples from package manager**
 - Starter Assets
 - XR Device Simulator
-3. Import Mapping Scene from Mapping Module's samples
-4. Make sure your oculus configuration supports anchors and passthrough
+3. **Import Mapping Scene from Mapping Module's samples**
+4. **Make sure your oculus configuration supports anchors and passthrough**
 
 ## Contributors
 
